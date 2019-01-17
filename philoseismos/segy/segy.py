@@ -72,7 +72,15 @@ class Segy:
             self.Data._unpack_from_bytearray(self._byteSegy.data, **params)
 
     def change_sample_format(self, fsf):
+        """ """
+
         pass
+
+    # ========================== #
+    # ===== Dunder methods ===== #
+
+    def __repr__(self):
+        return f'Segy(file={self.file})'
 
     # ============================ #
     # ===== Factory methods ===== #

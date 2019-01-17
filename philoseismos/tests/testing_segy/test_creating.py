@@ -14,6 +14,7 @@ def test_creating_raises_ValueError_when_bad_shaped_matrix_is_passed():
 @pytest.fixture(scope="module")
 def segy():
     data = np.ones((10, 20), dtype=np.float32)
+    data[9] *= 9
     segy = Segy.create_from_DataMatrix(data, sample_interval=500)
     return segy
 
@@ -34,4 +35,4 @@ def test_Data_parameters_are_restored_correctly(segy):
 
 def test_Traces_get_correct_values(segy):
     assert np.all(segy.Data.Traces[0].ys == 1)
-    assert np.all(segy.Data.Traces[9].ys == 1)
+    assert np.all(segy.Data.Traces[9].ys == 9)
