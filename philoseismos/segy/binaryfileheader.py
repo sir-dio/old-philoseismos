@@ -20,7 +20,7 @@ class BinaryFileHeader:
         self._segy = segy
 
         # initialize pd.Series to store BFH values:
-        self.table = pd.Series(index=BFH_columns)
+        self.table = pd.Series(index=BFH_columns, dtype=object)
 
     def check_mandatory_fields(self):
         return True
