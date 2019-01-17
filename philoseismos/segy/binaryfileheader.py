@@ -1,10 +1,12 @@
-""" philoseismos: with passion for the seismoc method.
+""" philoseismos: with passion for the seismic method.
 
 @author: sir-dio
 e-mail: dubrovin.io@icloud.com """
 
 import pandas as pd
 import struct
+
+from philoseismos.segy.tools.constants import BFH_columns
 
 
 class BinaryFileHeader:
@@ -16,6 +18,9 @@ class BinaryFileHeader:
 
         # store a reference to the Segy object:
         self._segy = segy
+
+        # initialize pd.Series to store BFH values:
+        self.table = pd.Series(index=BFH_columns)
 
     def check_mandatory_fields(self):
         return True
@@ -44,9 +49,6 @@ class BinaryFileHeader:
 
         # grab the endian value from the Segy object:
         endian = self._segy.endian
-
-        # initialize pd.Series to store BFH values:
-        self.table = pd.Series()
 
         # unpack the values into the table:
         self.table['Job ID'] = self._unpack4(endian, 1, bytearray_)
