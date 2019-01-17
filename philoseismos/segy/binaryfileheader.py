@@ -26,7 +26,9 @@ class BinaryFileHeader:
         return True
 
     def autofill(self):
-        pass
+        """ """
+
+        self.table.fillna(value=0, inplace=True)
 
     def print_filled(self):
         pass
@@ -66,6 +68,15 @@ class BinaryFileHeader:
         self.table['# Traces'] = self._unpack8(endian, 313, bytearray_)
         self.table['Data offset'] = self._unpack8(endian, 321, bytearray_)
         self.table['# Ext. TFHs'] = self._unpack2(endian, 305, bytearray_)
+
+    # ============================ #
+    # ===== Updating methods ===== #
+
+    def _update_from_dictionary(self, dictionary):
+        """ """
+
+        # a method that does that in pandas is update():
+        self.table.update(pd.Series(dictionary))
 
     # =================================== #
     # ===== Internal helper methods ===== #

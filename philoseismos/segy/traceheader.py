@@ -94,6 +94,12 @@ class TraceHeader:
         self.time_basis = self._unpack2(endian, 167, bytearray_)
         self.measurement_unit = self._unpack2(endian, 203, bytearray_)
 
+    def _create_from_dictionary(self, dictionary):
+        """ """
+
+        # initiate a table - a link to the big geometry of the Data object
+        self.table = self._trace._data.geometry.iloc[self._trace.id]
+
     # =================================== #
     # ===== Internal helper methods ===== #
 

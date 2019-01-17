@@ -60,5 +60,14 @@ class Trace:
         self._data.DM[self.id] = np.array(ys)
         self.ys = self._data.DM[self.id]
 
+    def _get_values_from_DataMatrix(self):
+        """ """
+
+        # reset and unpack the trace header:
+        self.Header = TraceHeader(trace=self)
+        self.Header._create_from_dictionary(dict())
+
+        self.ys = self._data.DM[self.id]
+
     # =================================== #
     # ===== Internal helper methods ===== #
