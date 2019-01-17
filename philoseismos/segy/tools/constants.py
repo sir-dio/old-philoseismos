@@ -12,6 +12,18 @@ sample_format_codes = {
     16: (1, 'B', '1-byte, unsigned integer')
 }
 
+BFH_columns = ['Sample interval',  # mandatory
+               'Sample format',    # mandatory
+               'Samples / trace',  # mandatory
+               '# Traces',
+               'Job ID',
+               'Line #',
+               'Data offset',
+               '# Ext. TFHs',
+               'SEG-Y Revision Major',
+               'SEG-Y Revisiom Minor',
+               ]
+
 trace_header_list = ['TRACENO',
                      'FFID',
                      'CHAN',

@@ -1,4 +1,4 @@
-""" philoseismos: with passion for the seismoc method.
+""" philoseismos: with passion for the seismic method.
 
 @author: sir-dio
 e-mail: dubrovin.io@icloud.com """
