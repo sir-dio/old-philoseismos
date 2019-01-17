@@ -1,4 +1,4 @@
-""" philoseismos: with passion for the seismoc method.
+""" philoseismos: with passion for the seismic method.
 
 @author: sir-dio
 e-mail: dubrovin.io@icloud.com """
@@ -8,7 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
-from philoseismos.segy.tools.constants import trace_header_list
+from philoseismos.segy.tools.constants import trace_header_list, data_type_map
 from philoseismos.segy.trace import Trace
 
 
@@ -50,9 +50,10 @@ class Data:
         # calculate the number of traces [240 is the size of a trace header]:
         self.num_traces = int(len(bytearray_) / (self.trace_size_B + 240))
 
-        # create a DataMatrix with corresponding data type:
+        # define the shape for the DataMatrix
         DM_shape = (self.num_traces, trace_length)
 
+        # create a DataMatrix with corresponding data type:
         if sample_format == 1:         # R4 IBM in RadexPro
             self.DM = np.empty(DM_shape, dtype=np.float32)
         elif sample_format == 2:       # I4 in RadexPro
@@ -106,6 +107,31 @@ class Data:
                                                       trace_length)
                 self.geometry.at[N + 1, '_trace'] = self.Traces[N]
 
+    def _import_DataMatrix(self, DM):
+        """ """
+
+        # save the DataMatrix itself:
+        self.DM = DM
+
+        # restore the parameters from the DM
+        self.num_traces = DM.shape[0]
+        sample_format = data_type_map[DM.dtype]
+        self.sample_size, self._format_letter, _ = sfc[sample_format]
+
+        # create a DataFrame for the geometry:
+        self.geometry = pd.DataFrame(
+            index=range(1, 1 + self.num_traces),
+            columns=trace_header_list)
+
+        # reset the Traces list:
+        self.Traces = []
+
+        # iterate over DM creating Traces:
+        for N in range(self.num_traces):
+            self.Traces.append(Trace(data=self, id=N))
+            self.Traces[N]._get_values_from_DataMatrix()
+            self.geometry.at[N + 1, '_trace'] = self.Traces[N]
+
     # =================================== #
     # ===== Internal helper methods ===== #
 
@@ -120,6 +146,8 @@ class Data:
         return parameters
 
     def _get_trace_bytes(self, bytearray_, traceno):
+        """ """
+
         start_byte = (self.trace_size_B + 240) * traceno
         end_byte = (self.trace_size_B + 240) * (traceno + 1)
         return bytearray_[start_byte:end_byte]

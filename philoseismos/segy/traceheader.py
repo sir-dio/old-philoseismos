@@ -1,4 +1,4 @@
-""" philoseismos: with passion for the seismoc method.
+""" philoseismos: with passion for the seismic method.
 
 @author: sir-dio
 e-mail: dubrovin.io@icloud.com """
@@ -93,6 +93,12 @@ class TraceHeader:
         self.coord_units = self._unpack2(endian, 89, bytearray_)
         self.time_basis = self._unpack2(endian, 167, bytearray_)
         self.measurement_unit = self._unpack2(endian, 203, bytearray_)
+
+    def _create_from_dictionary(self, dictionary):
+        """ """
+
+        # initiate a table - a link to the big geometry of the Data object
+        self.table = self._trace._data.geometry.iloc[self._trace.id]
 
     # =================================== #
     # ===== Internal helper methods ===== #

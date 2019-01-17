@@ -1,3 +1,8 @@
+import numpy as np
+
+# a dictionary that maps sample format codes from BFHs
+# to the sample size, formatting letter for packing/unpacking,
+# and a verbose description:
 sample_format_codes = {
     1: (4, None, '4-byte IBM floating-point'),
     2: (4, 'i', '4-byte signed integer'),
@@ -12,6 +17,21 @@ sample_format_codes = {
     16: (1, 'B', '1-byte, unsigned integer')
 }
 
+# a list of column names that are used when BFHs are created
+BFH_columns = ['Sample interval',  # mandatory
+               'Sample format',    # mandatory
+               'Samples / trace',  # mandatory
+               '# Traces',
+               'Job ID',
+               'Line #',
+               'Data offset',
+               '# Ext. TFHs',
+               'SEG-Y Revision Major',
+               'SEG-Y Revisiom Minor',
+               ]
+
+# a list that containes names of trace header that are used
+# to create a geometry DataFrame in the Data object
 trace_header_list = ['TRACENO',
                      'FFID',
                      'CHAN',
@@ -33,3 +53,14 @@ trace_header_list = ['TRACENO',
                      'dt',
                      '_trace',
                      ]
+
+# a dictionary that maps the dtype of the matrix to
+# the sample format code for BFH
+data_type_map = {np.dtype('float32'): 5,
+                 np.dtype('int32'): 2,
+                 np.dtype('int16'): 3,
+                 np.dtype('float64'): 6,
+                 np.dtype('int8'): 8,
+                 np.dtype('int64'): 9,
+                 np.dtype('uint32'): 10,
+                 np.dtype('uint16'): 11}

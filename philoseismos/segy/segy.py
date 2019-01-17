@@ -1,4 +1,4 @@
-""" philoseismos: with passion for the seismoc method.
+""" philoseismos: with passion for the seismic method.
 
 @author: sir-dio
 e-mail: dubrovin.io@icloud.com """
@@ -7,6 +7,7 @@ from philoseismos.segy.bytesegy import byteSegy
 from philoseismos.segy.textualfileheader import TextualFileHeader
 from philoseismos.segy.binaryfileheader import BinaryFileHeader
 from philoseismos.segy.data import Data
+from philoseismos.segy.tools.constants import data_type_map
 
 
 class Segy:
@@ -72,3 +73,27 @@ class Segy:
 
     def change_sample_format(self, fsf):
         pass
+
+    # ============================ #
+    # ===== Factory methods ===== #
+
+    @classmethod
+    def create_from_DataMatrix(cls, DM, sample_interval=500):
+        """ """
+
+        if DM.ndim != 2:
+            raise ValueError("The DataMatrix must have exactly 2 dimensions.")
+
+        bfh_values = {'Sample interval': sample_interval,
+                      'Sample format': data_type_map[DM.dtype],
+                      'Samples / trace': DM.shape[1],
+                      '# Traces': DM.shape[0],
+                      'Data offset': 3600,
+                      }
+
+        segy = cls(endian='>')
+
+        segy.BFH._update_from_dictionary(bfh_values)
+        segy.Data._import_DataMatrix(DM)
+
+        return segy
