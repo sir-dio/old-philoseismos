@@ -12,7 +12,8 @@ from philoseismos.segy.tools.constants import data_type_map
 
 class Segy:
 
-    """ """
+    """ Main object for the package. Represents a SEG-Y file and contains
+    methods to open, write, modify and create such files.  """
 
     def __init__(self, file=None, endian='auto', fsf=None, silent=False):
         """ """
@@ -87,7 +88,21 @@ class Segy:
 
     @classmethod
     def create_from_DataMatrix(cls, DM, sample_interval=500):
-        """ """
+        """ Creates a Segy object from given 2D matrix.
+
+        Parameters
+        ----------
+        DM : 2D array
+            DM stands for Data Matrix. It is a simple numpy 2D array where
+            each trace is represented by a row.
+        sample_interval : int
+            A sample interval in microseconds to use.
+
+        Notes
+        -----
+        The dtype attribute of the DM is used to choose a sample format for
+        the Segy. The endian is set to big by default, but can be changed
+        before saving the file if desired. """
 
         if DM.ndim != 2:
             raise ValueError("The DataMatrix must have exactly 2 dimensions.")
