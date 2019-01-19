@@ -8,7 +8,11 @@ import struct
 
 class TraceHeader:
 
-    """ """
+    """ An object, representing a Standart Trace Header.
+        The values included in the Trace Headers
+        are limited and intended to provide information that
+        may change on a trace-by-trace basis and the basic
+        information needed to process and identify the trace."""
 
     def __init__(self, trace):
         """ """
@@ -20,7 +24,7 @@ class TraceHeader:
     # ===== Dunder methods ===== #
 
     def __repr__(self):
-        return ''
+        return str(self.table)
 
     # ============================ #
     # ===== Internal methods ===== #
