@@ -10,7 +10,7 @@ from tqdm import tqdm
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
 from philoseismos.segy.tools.constants import trace_header_list, data_type_map
 from philoseismos.segy.trace import Trace
-from philoseismos.segy.drawing import wiggle
+from philoseismos.segy.drawing import wiggle, imshow
 
 
 class Data:
@@ -42,6 +42,14 @@ class Data:
         dt = self._segy.BFH.table['Sample Interval'] / 1000
         # pass DataMatrix to wiggle_matrix():
         wiggle.wiggle_matrix(ax=ax, matrix=self.DM, dt=dt, normalize=normalize)
+
+    def imshow(self, ax, normalize=True):
+        """ """
+
+        # get the sample interval from BFH:
+        dt = self._segy.BFH.table['Sample Interval'] / 1000
+        # pass DataMatrix to wiggle_matrix():
+        imshow.imshow_matrix(ax=ax, matrix=self.DM, dt=dt, normalize=normalize)
 
     # ============================ #
     # ===== Internal methods ===== #
