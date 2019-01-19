@@ -11,7 +11,12 @@ from philoseismos.segy.tools.constants import BFH_columns
 
 class BinaryFileHeader:
 
-    """ """
+    """ An object representing a SEG-Y Binary File Header.
+    Binary File Header consists of 400 bytes of binary values relevant
+    to the whole SEG-Y file.
+    Certain values in this header are crucial for the processing
+    of the data in the file, particularly the sample interval, trace
+    length and format code. """
 
     def __init__(self, segy):
         """ """
@@ -37,7 +42,7 @@ class BinaryFileHeader:
     # ===== Dunder methods ===== #
 
     def __repr__(self):
-        return ''
+        return str(self.table)
 
     # ============================ #
     # ===== Internal methods ===== #
