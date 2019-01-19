@@ -18,9 +18,9 @@ sample_format_codes = {
 }
 
 # a list of column names that are used when BFHs are created
-BFH_columns = ['Sample interval',  # mandatory
-               'Sample format',    # mandatory
-               'Samples / trace',  # mandatory
+BFH_columns = ['Sample Interval',  # mandatory
+               'Sample Format',    # mandatory
+               'Samples / Trace',  # mandatory
                '# Traces',
                'Job ID',
                'Line #',
