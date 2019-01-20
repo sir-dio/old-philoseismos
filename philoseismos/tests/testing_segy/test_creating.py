@@ -21,9 +21,9 @@ def segy():
 
 def test_BFH_values_are_correct(segy):
     table = segy.BFH.table
-    assert table['Sample interval'] == 500
-    assert table['Sample format'] == 5
-    assert table['Samples / trace'] == 20
+    assert table['Sample Interval'] == 500
+    assert table['Sample Format'] == 5
+    assert table['Samples / Trace'] == 20
     assert table['# Traces'] == 10
     assert table['Data offset'] == 3600
 

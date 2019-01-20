@@ -81,7 +81,7 @@ class Segy:
     # ===== Dunder methods ===== #
 
     def __repr__(self):
-        return f'Segy(file={self.file})'
+        return 'Segy(file={})'.format(self.file)
 
     # ============================ #
     # ===== Factory methods ===== #
@@ -107,9 +107,9 @@ class Segy:
         if DM.ndim != 2:
             raise ValueError("The DataMatrix must have exactly 2 dimensions.")
 
-        bfh_values = {'Sample interval': sample_interval,
-                      'Sample format': data_type_map[DM.dtype],
-                      'Samples / trace': DM.shape[1],
+        bfh_values = {'Sample Interval': sample_interval,
+                      'Sample Format': data_type_map[DM.dtype],
+                      'Samples / Trace': DM.shape[1],
                       '# Traces': DM.shape[0],
                       'Data offset': 3600,
                       }
