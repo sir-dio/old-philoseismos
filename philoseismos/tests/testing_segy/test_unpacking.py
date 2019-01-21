@@ -76,7 +76,7 @@ def test_BFH_unpacks_bytearray_correctly(bfh):
     assert bfh.table['Job ID'] == 666
     assert bfh.table['Sample Interval'] == 500
     assert bfh.table['Sample Format'] == 5
-    assert bfh.table['Data offset'] == 123456
+    assert bfh.table['Data Offset'] == 123456
 
 # ====================== #
 # ===== Data tests ===== #

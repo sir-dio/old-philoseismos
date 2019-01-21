@@ -24,7 +24,7 @@ BFH_columns = ['Sample Interval',  # mandatory
                '# Traces',
                'Job ID',
                'Line #',
-               'Data offset',
+               'Data Offset',
                '# Ext. TFHs',
                'SEG-Y Revision Major',
                'SEG-Y Revisiom Minor',

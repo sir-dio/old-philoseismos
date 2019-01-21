@@ -29,5 +29,16 @@ def test_TFH_packs_correctly(segy):
 # ===== Binary File Header tests ===== #
 
 
+def test_BFH_packs_correctly(segy):
+    bfh = segy.BFH
+    bfh.table["Job ID"] = 65
+    packed = bfh._pack_to_bytearray()
+    assert len(packed) == 400
+    assert packed[:4] == struct.pack('>i', 65)
+    assert packed[16:18] == struct.pack('>h', 500)
+    assert packed[24:26] == struct.pack('>h', 5)
+    assert packed[312:320] == struct.pack('>Q', 10)
+    assert packed[320:328] == struct.pack('>Q', 3600)
+
 # ====================== #
 # ===== Data tests ===== #
