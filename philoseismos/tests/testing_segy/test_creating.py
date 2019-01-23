@@ -25,7 +25,7 @@ def test_BFH_values_are_correct(segy):
     assert table['Sample Format'] == 5
     assert table['Samples / Trace'] == 20
     assert table['# Traces'] == 10
-    assert table['Data offset'] == 3600
+    assert table['Byte Offset of Data'] == 3600
 
 
 def test_Data_parameters_are_restored_correctly(segy):

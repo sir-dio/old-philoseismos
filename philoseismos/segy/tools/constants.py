@@ -17,20 +17,57 @@ sample_format_codes = {
     16: (1, 'B', '1-byte, unsigned integer')
 }
 
-# a list of column names that are used when BFHs are created
-BFH_columns = ['Sample Interval',  # mandatory
-               'Sample Format',    # mandatory
-               'Samples / Trace',  # mandatory
-               '# Traces',
-               'Job ID',
-               'Line #',
-               'Data offset',
-               '# Ext. TFHs',
-               'SEG-Y Revision Major',
-               'SEG-Y Revisiom Minor',
-               ]
+# strings to unpack a BFHs from bytes to tuples:
+bfh_string1 = 'iiihhhhhhhhhhhhhhhhhhhhhhhhiiiQQiii'  # first 100 bytes
+bfh_string2 = 'BBhhihQQi'  # bytes from 300 to 332
 
-# a list that containes names of trace header that are used
+# a list of column names that are used when BFHs are created
+BFH_columns = ['Job ID',
+               'Line #',
+               'Reel #',
+               'Traces / Ensemble',
+               'Aux. Traces / Ensemble',
+               'Sample Interval',
+               'Sample Interval (orig.)',
+               'Samples / Trace',
+               'Samples / Trace (orig.)',
+               'Sample Format',
+               'Ensemble Fold',
+               'Trace Sorting',
+               'Vertical Sum',
+               'Sweep Freq. (start)',
+               'Sweep Freq. (end)',
+               'Sweep Length',
+               'Sweep Type',
+               'Sweep Channel',
+               'Sweep Taper (start)',
+               'Sweep Taper (end)',
+               'Taper Type',
+               'Correlated Flag',
+               'Binary Gain Recovered Flag',
+               'Amp. Recovery Method',
+               'Measurement System',  # 1 for meters, 2 for feet
+               'Impulse Polarity',
+               'Vibratory Polarity',
+               'Ext. Traces / Ensemble',
+               'Ext. Aux. Traces / Ensemble',
+               'Ext. Samples / Trace',
+               'Ext. Sample Interval',
+               'Ext. Sample Interval (orig.)',
+               'Ext. Sample / Trace (orig.)',
+               'Ext. Ensemble Fold',
+               'Integer Constant',
+               'SEG-Y Rev. Major',
+               'SEG-Y Rev. Minor',
+               'Fixed Trace Length Flag',
+               '# Ext. TFHs',
+               '# Additional Trace Headers',
+               'Time Basis',
+               '# Traces',
+               'Byte Offset of Data',
+               '# Trailer Stanzas']
+
+# a list that contains names of trace header that are used
 # to create a geometry DataFrame in the Data object
 trace_header_list = ['TRACENO',
                      'FFID',

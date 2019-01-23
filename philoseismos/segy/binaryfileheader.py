@@ -7,6 +7,7 @@ import pandas as pd
 import struct
 
 from philoseismos.segy.tools.constants import BFH_columns
+from philoseismos.segy.tools.constants import bfh_string1, bfh_string2
 
 
 class BinaryFileHeader:
@@ -25,7 +26,8 @@ class BinaryFileHeader:
         self._segy = segy
 
         # initialize pd.Series to store BFH values:
-        self.table = pd.Series(index=BFH_columns, dtype=object)
+        self.table = pd.Series(index=BFH_columns, dtype='int64')
+        self.table.fillna(0, inplace=True)
 
     def check_mandatory_fields(self):
         return True
@@ -54,25 +56,26 @@ class BinaryFileHeader:
         if len(bytearray_) != 400:
             raise ValueError('BFH length does not equal 400')
 
-        # grab the endian value from the Segy object:
-        endian = self._segy.endian
+        # construct the full format string using the endian:
+        fs1 = self._segy.endian + bfh_string1
+        fs2 = self._segy.endian + bfh_string2
 
-        # unpack the values into the table:
-        self.table['Job ID'] = self._unpack4(endian, 1, bytearray_)
-        self.table['Line #'] = self._unpack4(endian, 5, bytearray_)
-        self.table['Sample Interval'] = self._unpack2(endian, 17, bytearray_)
-        self.table['Samples / Trace'] = self._unpack2(endian, 21, bytearray_)
+        # unpack the BFH bytes using format strings:
+        unpacked1 = struct.unpack(fs1, bytearray_[:100])
+        unpacked2 = struct.unpack(fs2, bytearray_[300:332])
 
-        # check for the forced sample format:
+        # concatenate the results:
+        unpacked = unpacked1 + unpacked2
+
+        # construct new table:
+        updated_table = pd.Series(index=BFH_columns, data=unpacked)
+
+        # check for forced sample format for the Segy:
         if self._segy.fsf:
-            self.table['Sample Format'] = self._segy.fsf
-        else:
-            self.table['Sample Format'] = self._unpack2(endian, 25, bytearray_)
+            updated_table['Sample Format'] = self._segy.fsf
 
-        # continue unpacking values into the table:
-        self.table['# Traces'] = self._unpack8(endian, 313, bytearray_)
-        self.table['Data offset'] = self._unpack8(endian, 321, bytearray_)
-        self.table['# Ext. TFHs'] = self._unpack2(endian, 305, bytearray_)
+        # update the table:
+        self.table.update(updated_table)
 
     # ============================ #
     # ===== Updating methods ===== #
@@ -82,21 +85,3 @@ class BinaryFileHeader:
 
         # a method that does that in pandas is update():
         self.table.update(pd.Series(dictionary))
-
-    # =================================== #
-    # ===== Internal helper methods ===== #
-
-    def _unpack2(self, endian, fb, bytearray_):
-        """ """
-        fs = endian + 'h'
-        return struct.unpack(fs, bytearray_[fb - 1:fb + 1])[0]
-
-    def _unpack4(self, endian, fb, bytearray_):
-        """ """
-        fs = endian + 'i'
-        return struct.unpack(fs, bytearray_[fb - 1:fb + 3])[0]
-
-    def _unpack8(self, endian, fb, bytearray_):
-        """ """
-        fs = endian + 'Q'
-        return struct.unpack(fs, bytearray_[fb - 1:fb + 7])[0]

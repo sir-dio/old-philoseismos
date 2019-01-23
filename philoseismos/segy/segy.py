@@ -111,7 +111,7 @@ class Segy:
                       'Sample Format': data_type_map[DM.dtype],
                       'Samples / Trace': DM.shape[1],
                       '# Traces': DM.shape[0],
-                      'Data offset': 3600,
+                      'Byte Offset of Data': 3600,
                       }
 
         segy = cls(endian='>')
