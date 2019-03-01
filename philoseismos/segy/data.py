@@ -59,9 +59,10 @@ class Data:
         # define the shape for the DataMatrix
         DM_shape = (self.num_traces, trace_length)
 
-        # geometry table:
+        # create the geometry table:
         self.geometry = pd.DataFrame(index=range(1, self.num_traces + 1),
                                      columns=trace_header_columns)
+        self.geometry.fillna(0, inplace=True)
 
         # create a DataMatrix with corresponding data type:
         self.DM = np.empty(DM_shape, dtype=data_type_map1[sample_format])
@@ -69,10 +70,20 @@ class Data:
         # reset the Traces list in case it was not empty:
         self.Traces = []
 
-        for N in tqdm(range(self.num_traces)):
-            trace = Trace(data=self, id_=N)
-            trace._unpack_from_byteSegy()
-            self.Traces.append(trace)
+        # unpack the traces:
+        if self._segy.silent or self._segy._byteSegy.sizeMB < 5:
+            for N in range(self.num_traces):
+                trace = Trace(data=self, id_=N)
+                trace._unpack_from_byteSegy()
+                self.Traces.append(trace)
+        else:
+            # create a progress bar for files > 5 Mb:
+            for N in tqdm(iterable=range(self.num_traces),
+                          desc='Unpacking traces', unit=' traces',
+                          postfix=f'file={self._segy.file.split("/")[-1]}'):
+                trace = Trace(data=self, id_=N)
+                trace._unpack_from_byteSegy()
+                self.Traces.append(trace)
 
         # iterate over data bytes unpacking traces:
         # if self._segy.silent or self._segy._byteSegy.sizeMB < 5:
@@ -112,9 +123,14 @@ class Data:
         # reset the Traces list:
         self.Traces = []
 
+        # create the geometry table:
+        self.geometry = pd.DataFrame(index=range(1, self.num_traces + 1),
+                                     columns=trace_header_columns)
+        self.geometry.fillna(0, inplace=True)
+
         # iterate over DM creating Traces:
         for N in range(self.num_traces):
-            self.Traces.append(Trace(data=self, id=N))
+            self.Traces.append(Trace(data=self, id_=N))
             self.Traces[N]._get_values_from_DataMatrix()
 
     # =================================== #

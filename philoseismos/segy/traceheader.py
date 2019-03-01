@@ -24,14 +24,17 @@ class TraceHeader:
         # store a reference to the Trace object:
         self._trace = trace
 
+        # store a reference to the big geometry table:
+        self._table = self._trace._data.geometry.iloc[self._trace.id]
+
     # ========================== #
     # ===== Dunder methods ===== #
 
     def __repr__(self):
-        return str(self._trace._data.geometry.iloc[self._trace.id + 1])
+        return str(self._table)
 
     def __getitem__(self, key):
-        return self._trace._data.geometry.iloc[self._trace.id + 1][key]
+        return self._table[key]
 
     # ============================ #
     # ===== Internal methods ===== #
@@ -75,11 +78,10 @@ class TraceHeader:
         # update the table:
         self._trace._data.geometry.iloc[self._trace.id][:] = unpacked
 
-    def _create_from_dictionary(self, dictionary):
+    def set(self, field, value):
         """ """
 
-        # initiate a table - a link to the big geometry of the Data object
-        self.table = self._trace._data.geometry.iloc[self._trace.id]
+        self._table[field] = value
 
     # =================================== #
     # ===== Internal helper methods ===== #

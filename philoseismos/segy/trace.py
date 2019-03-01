@@ -54,8 +54,8 @@ class Trace:
             ys = ibm.unpack_ibm32_series(bytearray_=value_bytes,
                                          endian=endian)
         else:
-            fcode = endian + self._data._format_letter * (len(value_bytes) // 4)
-            ys = struct.unpack(fcode, value_bytes)
+            fs = endian + self._data._format_letter * (len(value_bytes) // 4)
+            ys = struct.unpack(fs, value_bytes)
 
         # store the unpacked values in the Data Matrix:
         self._data.DM[self.id] = np.array(ys)
@@ -64,9 +64,9 @@ class Trace:
     def _get_values_from_DataMatrix(self):
         """ """
 
-        # reset and unpack the trace header:
+        # reset the trace header:
         self.Header = TraceHeader(trace=self)
-        self.Header._create_from_dictionary(dict())
+        self.Header.set('TRACENO', self.id + 1)
 
         self.ys = self._data.DM[self.id]
 
