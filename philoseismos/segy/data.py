@@ -62,7 +62,6 @@ class Data:
         # create the geometry table:
         self.geometry = pd.DataFrame(index=range(1, self.num_traces + 1),
                                      columns=trace_header_columns)
-        self.geometry.fillna(0, inplace=True)
 
         # create a DataMatrix with corresponding data type:
         self.DM = np.empty(DM_shape, dtype=data_type_map1[sample_format])
