@@ -4,6 +4,10 @@
 e-mail: dubrovin.io@icloud.com """
 
 import struct
+import pandas as pd
+
+from philoseismos.segy.tools.constants import trace_header_columns
+from philoseismos.segy.tools.constants import trace_header_str
 
 
 class TraceHeader:
@@ -24,7 +28,10 @@ class TraceHeader:
     # ===== Dunder methods ===== #
 
     def __repr__(self):
-        return str(self.table)
+        return str(self._trace._data.geometry.iloc[self._trace.id + 1])
+
+    def __getitem__(self, key):
+        return self._trace._data.geometry.iloc[self._trace.id + 1][key]
 
     # ============================ #
     # ===== Internal methods ===== #
@@ -36,67 +43,37 @@ class TraceHeader:
         if len(bytearray_) != 240:
             raise ValueError('Trace Header length does not equal 240')
 
-        # grab the endian value from the Segy object:
-        endian = self._trace._data._segy.endian
+        # construct the full format string using the endian
+        fs = self._trace._data._segy.endian + trace_header_str
 
-        # initiate a table - a link to the big geometry of the Data object
-        self.table = self._trace._data.geometry.iloc[self._trace.id]
+        # unpack the Trace Header bytes using the format string:
+        unpacked = list(struct.unpack(fs, bytearray_[:232]))
 
-        self.table['TRACENO'] = self._unpack4(endian, 1, bytearray_)
-        self.N = self._trace.id + 1   # trace number within SEG-Y file
+        # apply the coordinate scalar, stored in COORDSC header (index 20):
+        if unpacked[20] < 0:  # if negative, to be used as a divisor
+            div = abs(unpacked[20])
+            unpacked[21] /= div  # SOU_X
+            unpacked[22] /= div  # SOU_Y
+            unpacked[23] /= div  # REC_X
+            unpacked[24] /= div  # REC_Y
+            unpacked[71] /= div  # CDP_X
+            unpacked[72] /= div  # CDP_Y
+        else:   # if positive, to be used as a multiplier
+            if unpacked[20] == 0:  # 0 should be treated as 1
+                unpacked[20] = 1
+            mul = unpacked[20]
+            unpacked[21] *= mul  # SOU_X
+            unpacked[22] *= mul  # SOU_Y
+            unpacked[23] *= mul  # REC_X
+            unpacked[24] *= mul  # REC_Y
+            unpacked[71] *= mul  # CDP_X
+            unpacked[72] *= mul  # CDP_Y
 
-        # geometry headers
-        self.table['FFID'] = self._unpack4(endian, 9, bytearray_)
-        self.table['CHAN'] = self._unpack4(endian, 13, bytearray_)
+        # and then unpack last 8 bytes:
+        self.TH_name = bytearray_[232:].decode('cp500')
 
-        self.table['CDP'] = self._unpack4(endian, 21, bytearray_)
-        self.table['OFFSET'] = self._unpack4(endian, 37, bytearray_)
-
-        self.table['ELEVSC'] = self._unpack2(endian, 69, bytearray_)
-        self.table['COORDSC'] = self._unpack2(endian, 71, bytearray_)
-
-        # Coordinates themselves:
-        if self.table['COORDSC'] < 0:  # if negative, to be used as a divisor
-            div = abs(self.table['COORDSC'])
-            self.table['SOU_X'] = self._unpack4(endian, 73, bytearray_) / div
-            self.table['SOU_Y'] = self._unpack4(endian, 77, bytearray_) / div
-            self.table['REC_X'] = self._unpack4(endian, 81, bytearray_) / div
-            self.table['REC_Y'] = self._unpack4(endian, 85, bytearray_) / div
-
-            self.table['CDP_X'] = self._unpack4(endian, 181, bytearray_) / div
-            self.table['CDP_Y'] = self._unpack4(endian, 185, bytearray_) / div
-        elif self.table['COORDSC'] == 0:  # zero should be treated as 1
-            self.table['COORDSC'] = 1
-            self.table['SOU_X'] = self._unpack4(endian, 73, bytearray_)
-            self.table['SOU_Y'] = self._unpack4(endian, 77, bytearray_)
-            self.table['REC_X'] = self._unpack4(endian, 81, bytearray_)
-            self.table['REC_Y'] = self._unpack4(endian, 85, bytearray_)
-
-            self.table['CDP_X'] = self._unpack4(endian, 181, bytearray_)
-            self.table['CDP_Y'] = self._unpack4(endian, 185, bytearray_)
-        else:  # if positive, to be used as a multiplier
-            mul = self.table['COORDSC']
-            self.table['SOU_X'] = self._unpack4(endian, 73, bytearray_) * mul
-            self.table['SOU_Y'] = self._unpack4(endian, 77, bytearray_) * mul
-            self.table['REC_X'] = self._unpack4(endian, 81, bytearray_) * mul
-            self.table['REC_Y'] = self._unpack4(endian, 85, bytearray_) * mul
-
-            self.table['CDP_X'] = self._unpack4(endian, 181, bytearray_) * mul
-            self.table['CDP_Y'] = self._unpack4(endian, 185, bytearray_) * mul
-
-        # Date and time:
-        self.table['YEAR'] = self._unpack2(endian, 157, bytearray_)
-        self.table['DAY'] = self._unpack2(endian, 159, bytearray_)
-        self.table['HOUR'] = self._unpack2(endian, 161, bytearray_)
-        self.table['MINUTE'] = self._unpack2(endian, 163, bytearray_)
-        self.table['SECOND'] = self._unpack2(endian, 165, bytearray_)
-
-        self.trace_len = self._unpack2(endian, 115, bytearray_)
-        self.table['dt'] = self._unpack2(endian, 117, bytearray_)
-
-        self.coord_units = self._unpack2(endian, 89, bytearray_)
-        self.time_basis = self._unpack2(endian, 167, bytearray_)
-        self.measurement_unit = self._unpack2(endian, 203, bytearray_)
+        # update the table:
+        self._trace._data.geometry.iloc[self._trace.id][:] = unpacked
 
     def _create_from_dictionary(self, dictionary):
         """ """
@@ -106,13 +83,3 @@ class TraceHeader:
 
     # =================================== #
     # ===== Internal helper methods ===== #
-
-    def _unpack2(self, endian, fb, bytearray_):
-        """ """
-        fs = endian + 'h'
-        return struct.unpack(fs, bytearray_[fb - 1:fb + 1])[0]
-
-    def _unpack4(self, endian, fb, bytearray_):
-        """ """
-        fs = endian + 'i'
-        return struct.unpack(fs, bytearray_[fb - 1:fb + 3])[0]

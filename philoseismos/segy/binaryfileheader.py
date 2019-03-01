@@ -7,7 +7,7 @@ import pandas as pd
 import struct
 
 from philoseismos.segy.tools.constants import BFH_columns
-from philoseismos.segy.tools.constants import bfh_string1, bfh_string2
+from philoseismos.segy.tools.constants import bfh_string
 
 
 class BinaryFileHeader:
@@ -26,8 +26,8 @@ class BinaryFileHeader:
         self._segy = segy
 
         # initialize pd.Series to store BFH values:
-        self.table = pd.Series(index=BFH_columns, dtype='int64')
-        self.table.fillna(0, inplace=True)
+        self._table = pd.Series(index=BFH_columns, dtype='int64')
+        self._table.fillna(0, inplace=True)
 
     def check_mandatory_fields(self):
         return True
@@ -35,7 +35,7 @@ class BinaryFileHeader:
     def autofill(self):
         """ """
 
-        self.table.fillna(value=0, inplace=True)
+        self._table.fillna(value=0, inplace=True)
 
     def print_filled(self):
         pass
@@ -44,28 +44,24 @@ class BinaryFileHeader:
     # ===== Dunder methods ===== #
 
     def __repr__(self):
-        return str(self.table)
+        return str(self._table)
+
+    def __getitem__(self, key):
+        return self._table[key]
 
     # ============================ #
     # ===== Internal methods ===== #
 
-    def _unpack_from_bytearray(self, bytearray_):
+    def _unpack_from_byteSegy(self):
         """ """
 
-        # check if the bytearray is of correct size:
-        if len(bytearray_) != 400:
-            raise ValueError('BFH length does not equal 400')
+        bytearray_ = self._segy._byteSegy.bfh
 
         # construct the full format string using the endian:
-        fs1 = self._segy.endian + bfh_string1
-        fs2 = self._segy.endian + bfh_string2
+        fs = self._segy.endian + bfh_string
 
-        # unpack the BFH bytes using format strings:
-        unpacked1 = struct.unpack(fs1, bytearray_[:100])
-        unpacked2 = struct.unpack(fs2, bytearray_[300:332])
-
-        # concatenate the results:
-        unpacked = unpacked1 + unpacked2
+        # unpack the BFH bytes using the format string:
+        unpacked = struct.unpack(fs, bytearray_)
 
         # construct new table:
         updated_table = pd.Series(index=BFH_columns, data=unpacked)
@@ -75,7 +71,7 @@ class BinaryFileHeader:
             updated_table['Sample Format'] = self._segy.fsf
 
         # update the table:
-        self.table.update(updated_table)
+        self._table.update(updated_table)
 
     # ============================ #
     # ===== Updating methods ===== #
@@ -84,4 +80,4 @@ class BinaryFileHeader:
         """ """
 
         # a method that does that in pandas is update():
-        self.table.update(pd.Series(dictionary))
+        self._table.update(pd.Series(dictionary))

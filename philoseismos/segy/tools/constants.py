@@ -18,8 +18,10 @@ sample_format_codes = {
 }
 
 # strings to unpack a BFHs from bytes to tuples:
-bfh_string1 = 'iiihhhhhhhhhhhhhhhhhhhhhhhhiiiQQiii'  # first 100 bytes
-bfh_string2 = 'BBhhihQQi'  # bytes from 300 to 332
+bfh_string = 'iiihhhhhhhhhhhhhhhhhhhhhhhhiiiQQiii'  # first 100 bytes
+bfh_string += 'i' * 50  # unassigned bytes
+bfh_string += 'BBhhihQQi'  # bytes from 300 to 332
+bfh_string += 'i' * 17  # more unassigned bytes
 
 # a list of column names that are used when BFHs are created
 BFH_columns = ['Job ID',
@@ -56,20 +58,25 @@ BFH_columns = ['Job ID',
                'Ext. Sample Interval (orig.)',
                'Ext. Sample / Trace (orig.)',
                'Ext. Ensemble Fold',
-               'Integer Constant',
-               'SEG-Y Rev. Major',
-               'SEG-Y Rev. Minor',
-               'Fixed Trace Length Flag',
-               '# Ext. TFHs',
-               '# Additional Trace Headers',
-               'Time Basis',
-               '# Traces',
-               'Byte Offset of Data',
-               '# Trailer Stanzas']
+               'Integer Constant']
 
-tr_header_str = 'iiiiiiihhhhiiiiiiiihhiiiihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
-tr_header_str += 'hhhhhhhhhhhiiiiihhihhhhhhhhihh'
-# then 8 byte of text (ASCII or EBCDIC)
+BFH_columns += [f'Unassigned {i + 1}' for i in range(50)]
+
+BFH_columns += ['SEG-Y Rev. Major',
+                'SEG-Y Rev. Minor',
+                'Fixed Trace Length Flag',
+                '# Ext. TFHs',
+                '# Additional Trace Headers',
+                'Time Basis',
+                '# Traces',
+                'Byte Offset of Data',
+                '# Trailer Stanzas']
+
+BFH_columns += [f'Unassigned {i + 51}' for i in range(17)]
+
+trace_header_str = 'iiiiiiihhhhiiiiiiiihhiiiihhhhhhhhhhhhhhhhhhhhhhhhhh'
+trace_header_str += 'hhhhhhhhhhhhhhhhhhhhiiiiihhihhhhhhhhihh'
+# then 8 bytes of text (ASCII or EBCDIC)
 
 # a list that contains names of trace headers that are used
 # to create a geometry DataFrame in the Data object
@@ -165,13 +172,24 @@ trace_header_columns = ['TRACENO',
                         'Source Measurement Unit']
 # then a 'Header Name' -> 8 byte of text (ASCII or EBCDIC)
 
+data_type_map1 = {1: np.dtype('float64'),
+                  2: np.dtype('int32'),
+                  3: np.dtype('int16'),
+                  5: np.dtype('float32'),
+                  6: np.dtype('float64'),
+                  8: np.dtype('int8'),
+                  9: np.dtype('int64'),
+                  10: np.dtype('uint32'),
+                  11: np.dtype('uint16')}
+
+
 # a dictionary that maps the dtype of the matrix to
 # the sample format code for BFH
-data_type_map = {np.dtype('float32'): 5,
-                 np.dtype('int32'): 2,
-                 np.dtype('int16'): 3,
-                 np.dtype('float64'): 6,
-                 np.dtype('int8'): 8,
-                 np.dtype('int64'): 9,
-                 np.dtype('uint32'): 10,
-                 np.dtype('uint16'): 11}
+data_type_map2 = {np.dtype('float32'): 5,
+                  np.dtype('int32'): 2,
+                  np.dtype('int16'): 3,
+                  np.dtype('float64'): 6,
+                  np.dtype('int8'): 8,
+                  np.dtype('int64'): 9,
+                  np.dtype('uint32'): 10,
+                  np.dtype('uint16'): 11}
