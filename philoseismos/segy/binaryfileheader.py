@@ -44,6 +44,9 @@ class BinaryFileHeader:
     # ===== Dunder methods ===== #
 
     def __repr__(self):
+        return str(self._table.loc[self._table != 0])
+
+    def __str__(self):
         return str(self._table)
 
     def __getitem__(self, key):
