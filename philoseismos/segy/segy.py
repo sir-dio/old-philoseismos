@@ -111,6 +111,7 @@ class Segy:
                       'Samples / Trace': DM.shape[1],
                       '# Traces': DM.shape[0],
                       'Byte Offset of Data': 3600,
+                      'SEG-Y Rev. Major': 2,
                       }
 
         segy = cls(endian='>')

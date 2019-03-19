@@ -65,13 +65,18 @@ class Trace:
     def _get_values_from_DataMatrix(self):
         """ """
 
+        self.ys = self._data.DM[self.id]
+
         # reset the trace header:
         self.Header = TraceHeader(trace=self)
         self.Header.set('TRACENO', self.id + 1)
         self.Header.set('COORDSC', 1)
         self.Header.set('ELEVSC', 1)
+        self.Header.set('# Samples', self.ys.size)
 
-        self.ys = self._data.DM[self.id]
+        sample_inteval = self._data._segy.BFH['Sample Interval']
+        self.Header.set('Sample Interval', sample_inteval)
+        self.Header.set('Coordinate Units', 1)
 
     def _pack_to_bytearray(self):
         """ """
