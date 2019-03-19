@@ -74,6 +74,18 @@ class BinaryFileHeader:
         # update the table:
         self._table.update(updated_table)
 
+    def _pack_to_byteSegy(self):
+        """ """
+
+        # construct the full format string using the endian:
+        fs = self._segy.endian + bfh_string
+
+        # pack the BFH bytes using the format string:
+        packed = struct.pack(fs, *self._table.values)
+
+        # put the packed values into the byteSegy:
+        self._segy._byteSegy.bfh = packed
+
     # ============================ #
     # ===== Updating methods ===== #
 

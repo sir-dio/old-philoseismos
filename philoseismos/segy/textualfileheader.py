@@ -72,7 +72,7 @@ class TextualFileHeader:
 
         return self._whole[i * 80: (i + 1) * 80]
 
-    def _pack_to_bytearray(self):
+    def _pack_to_byteSegy(self):
         """ """
 
-        return bytearray(self._whole.encode('cp500'))
+        self._segy._byteSegy.tfh = bytearray(self._whole.encode('cp500'))
