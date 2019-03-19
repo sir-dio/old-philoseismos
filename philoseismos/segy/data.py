@@ -84,30 +84,6 @@ class Data:
                 trace._unpack_from_byteSegy()
                 self.Traces.append(trace)
 
-        # iterate over data bytes unpacking traces:
-        # if self._segy.silent or self._segy._byteSegy.sizeMB < 5:
-        #     # load with no progress bar:
-        #     for N in range(self.num_traces):
-        #         # extract the bytes for each individual trace:
-        #         trace_bytes = self._get_trace_bytes(bytearray_, N)
-        #         # add a new Trace object to the list of traces:
-        #         self.Traces.append(Trace(data=self, id=N))
-        #         # unpack a trace from bytes:
-        #         self.Traces[N]._unpack_from_bytearray(trace_bytes,
-        #                                               sample_format,
-        #                                               trace_length)
-        # else:
-        #     # create a progress bar for files > 5 Mb:
-        #     for N in tqdm(iterable=range(self.num_traces),
-        #                   desc='Unpacking traces', unit=' traces',
-        #                   postfix=f'file={self._segy.file}'):
-
-        #         trace_bytes = self._get_trace_bytes(bytearray_, N)
-        #         self.Traces.append(Trace(data=self, id=N))
-        #         self.Traces[N]._unpack_from_bytearray(trace_bytes,
-        #                                               sample_format,
-        #                                               trace_length)
-
     def _import_DataMatrix(self, DM):
         """ """
 
