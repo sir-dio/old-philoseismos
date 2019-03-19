@@ -68,10 +68,23 @@ class BinaryFileHeader:
 
         # check for forced sample format for the Segy:
         if self._segy.fsf:
+
             updated_table['Sample Format'] = self._segy.fsf
 
         # update the table:
         self._table.update(updated_table)
+
+    def _pack_to_byteSegy(self):
+        """ """
+
+        # construct the full format string using the endian:
+        fs = self._segy.endian + bfh_string
+
+        # pack the BFH bytes using the format string:
+        packed = struct.pack(fs, *self._table.values)
+
+        # put the packed values into the byteSegy:
+        self._segy._byteSegy.bfh = packed
 
     # ============================ #
     # ===== Updating methods ===== #
@@ -80,4 +93,5 @@ class BinaryFileHeader:
         """ """
 
         # a method that does that in pandas is update():
+
         self._table.update(pd.Series(dictionary))

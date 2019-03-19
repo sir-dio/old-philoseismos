@@ -29,6 +29,20 @@ class byteSegy:
         bytes_ = self._get_bytearray_from_file(file)
         self._load_from_bytearray(bytes_)
 
+    def to_file(self, file):
+        """ """
+
+        self._update()
+        out = self._pack_to_bytearray()
+        self._write_bytearray_into_file(file, out)
+
+    def _update(self):
+        """ """
+
+        self.segy.TFH._pack_to_byteSegy()
+        self.segy.BFH._pack_to_byteSegy()
+        self.segy.Data._pack_to_byteSegy()
+
     def _load_from_bytearray(self, bytearray_):
         """ """
 
@@ -47,3 +61,14 @@ class byteSegy:
         # open the file and return the bytes:
         with open(file, 'br') as f:
             return f.read()
+
+    def _pack_to_bytearray(self):
+        """ """
+
+        return self.tfh + self.bfh + self.data
+
+    def _write_bytearray_into_file(self, file, bytearray_):
+        """ """
+
+        with open(file, 'bw') as f:
+            f.write(bytearray_)

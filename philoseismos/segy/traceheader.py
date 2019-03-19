@@ -27,6 +27,14 @@ class TraceHeader:
         # store a reference to the big geometry table:
         self._table = self._trace._data.geometry.iloc[self._trace.id]
 
+        # initialize and empty name:
+        self.TH_name = f'SEG{trace.id:05}'
+
+    def set(self, field, value):
+        """ """
+
+        self._table[field] = value
+
     # ========================== #
     # ===== Dunder methods ===== #
 
@@ -78,10 +86,40 @@ class TraceHeader:
         # update the table:
         self._trace._data.geometry.iloc[self._trace.id][:] = unpacked
 
-    def set(self, field, value):
+    def _pack_to_bytearray(self):
         """ """
 
-        self._table[field] = value
+        # grab the values from self._table:
+        values = self._table.values
+
+        # apply the coordinate scalar:
+        if self['COORDSC'] < 0:
+            mul = abs(self['COORDSC'])
+            values[21] = int(values[21] * mul)  # SOU_X
+            values[22] = int(values[22] * mul)  # SOU_Y
+            values[23] = int(values[23] * mul)  # REC_X
+            values[24] = int(values[24] * mul)  # REC_Y
+            values[71] = int(values[71] * mul)  # CDP_X
+            values[72] = int(values[72] * mul)  # CDP_Y
+        else:
+            div = self['COORDSC']
+            values[21] = int(values[21] / div)  # SOU_X
+            values[22] = int(values[22] / div)  # SOU_Y
+            values[23] = int(values[23] / div)  # REC_X
+            values[24] = int(values[24] / div)  # REC_Y
+            values[71] = int(values[71] / div)  # CDP_X
+            values[72] = int(values[72] / div)  # CDP_Y
+
+        # construct the full format string using the endian
+        fs = self._trace._data._segy.endian + trace_header_str
+
+        # pack the values:
+        packed = struct.pack(fs, *values)
+
+        # and then pack the last 8 bytes:
+        packed += self.TH_name.encode('cp500')
+
+        return packed
 
     # =================================== #
     # ===== Internal helper methods ===== #

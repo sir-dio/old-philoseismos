@@ -53,6 +53,11 @@ class Segy:
         self.BFH._unpack_from_byteSegy()
         self.Data._unpack_from_byteSegy()
 
+    def save_file(self, file):
+        """ """
+
+        self._byteSegy.to_file(file)
+
     def change_sample_format(self, fsf):
         """ """
 

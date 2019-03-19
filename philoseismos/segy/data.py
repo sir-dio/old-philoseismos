@@ -125,5 +125,18 @@ class Data:
             self.Traces.append(Trace(data=self, id_=N))
             self.Traces[N]._get_values_from_DataMatrix()
 
+    def _pack_to_byteSegy(self):
+        """ """
+
+        # create an empty bytearray to fill with packed data:
+        packed = bytearray()
+
+        # iterate over traces, packing them to the bytearray:
+        for trace in self.Traces:
+            packed += trace._pack_to_bytearray()
+
+        # put the packed values into the byteSegy:
+        self._segy._byteSegy.data = packed
+
     # =================================== #
     # ===== Internal helper methods ===== #

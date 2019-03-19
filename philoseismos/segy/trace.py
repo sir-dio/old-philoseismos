@@ -54,7 +54,8 @@ class Trace:
             ys = ibm.unpack_ibm32_series(bytearray_=value_bytes,
                                          endian=endian)
         else:
-            fs = endian + self._data._format_letter * (len(value_bytes) // 4)
+            B = self._data.sample_size  # size of one sample
+            fs = endian + self._data._format_letter * (len(value_bytes) // B)
             ys = struct.unpack(fs, value_bytes)
 
         # store the unpacked values in the Data Matrix:
@@ -67,8 +68,31 @@ class Trace:
         # reset the trace header:
         self.Header = TraceHeader(trace=self)
         self.Header.set('TRACENO', self.id + 1)
+        self.Header.set('COORDSC', 1)
+        self.Header.set('ELEVSC', 1)
 
         self.ys = self._data.DM[self.id]
+
+    def _pack_to_bytearray(self):
+        """ """
+
+        # create an empty bytearray to pack into:
+        packed = bytearray()
+
+        # pack the Trace Header:
+        packed += self.Header._pack_to_bytearray()
+
+        # pack the values:
+        endian = self._data._segy.endian
+
+        if self._data._segy.BFH['Sample Format'] == 1:
+            packed += ibm.pack_ibm32_series(values=self.ys,
+                                            endian=endian)
+        else:
+            fs = endian + self._data._format_letter * self.ys.size
+            packed += struct.pack(fs, *self.ys)
+
+        return packed
 
     # =================================== #
     # ===== Internal helper methods ===== #
