@@ -60,13 +60,10 @@ class TextualFileHeader:
     # ============================ #
     # ===== Internal methods ===== #
 
-    def _unpack_from_bytearray(self, bytearray_):
+    def _unpack_from_byteSegy(self):
         """ """
 
-        # check if the bytearray is of correct size:
-        if len(bytearray_) != 3200:
-            raise ValueError('TFH length does not equal 3200')
-
+        bytearray_ = self._segy._byteSegy.tfh
         self._whole = bytearray_.decode('cp500')
         self._whole = self._whole.replace('\x00', ' ')
 

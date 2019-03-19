@@ -3,11 +3,13 @@
 @author: sir-dio
 e-mail: dubrovin.io@icloud.com """
 
+import struct
+
 from philoseismos.segy.bytesegy import byteSegy
 from philoseismos.segy.textualfileheader import TextualFileHeader
 from philoseismos.segy.binaryfileheader import BinaryFileHeader
 from philoseismos.segy.data import Data
-from philoseismos.segy.tools.constants import data_type_map
+from philoseismos.segy.tools.constants import data_type_map2
 
 
 class Segy:
@@ -42,35 +44,14 @@ class Segy:
     def load_file(self, file):
         """ """
 
-        # automatically detect endiannes:
+        self._byteSegy.load_from_file(file=file)
+
         if self.endian == 'auto':
-            try:
-                self.endian = '>'
+            self._detect_endiannes()
 
-                self._byteSegy.load_from_file(file=file)
-                self.TFH._unpack_from_bytearray(self._byteSegy.tfh)
-                self.BFH._unpack_from_bytearray(self._byteSegy.bfh)
-                params = self.Data._get_unpacking_parameters_from_BFH(self.BFH)
-                self.Data._unpack_from_bytearray(self._byteSegy.data, **params)
-
-            # a KeyError is raised when Data objects looks for format
-            # strings in the mapping dictionary defined in constants.py
-            except KeyError:
-                self.endian = '<'
-
-                self._byteSegy.load_from_file(file=file)
-                self.TFH._unpack_from_bytearray(self._byteSegy.tfh)
-                self.BFH._unpack_from_bytearray(self._byteSegy.bfh)
-                params = self.Data._get_unpacking_parameters_from_BFH(self.BFH)
-                self.Data._unpack_from_bytearray(self._byteSegy.data, **params)
-
-        # otherwise use specified endiannes:
-        else:
-            self._byteSegy.load_from_file(file=file)
-            self.TFH._unpack_from_bytearray(self._byteSegy.tfh)
-            self.BFH._unpack_from_bytearray(self._byteSegy.bfh)
-            params = self.Data._get_unpacking_parameters_from_BFH(self.BFH)
-            self.Data._unpack_from_bytearray(self._byteSegy.data, **params)
+        self.TFH._unpack_from_byteSegy()
+        self.BFH._unpack_from_byteSegy()
+        self.Data._unpack_from_byteSegy()
 
     def change_sample_format(self, fsf):
         """ """
@@ -82,6 +63,19 @@ class Segy:
 
     def __repr__(self):
         return 'Segy(file={})'.format(self.file)
+
+    # ============================ #
+    # ===== Internal methods ===== #
+
+    def _detect_endiannes(self):
+        """ """
+
+        sample_format_bytes = self._byteSegy.bfh[24:26]
+        try:
+            assert struct.unpack('>h', sample_format_bytes)[0] < 16
+            self.endian = '>'
+        except AssertionError:
+            self.endian = '<'
 
     # ============================ #
     # ===== Factory methods ===== #
@@ -108,10 +102,10 @@ class Segy:
             raise ValueError("The DataMatrix must have exactly 2 dimensions.")
 
         bfh_values = {'Sample Interval': sample_interval,
-                      'Sample Format': data_type_map[DM.dtype],
+                      'Sample Format': data_type_map2[DM.dtype],
                       'Samples / Trace': DM.shape[1],
                       '# Traces': DM.shape[0],
-                      'Data Offset': 3600,
+                      'Byte Offset of Data': 3600,
                       }
 
         segy = cls(endian='>')
