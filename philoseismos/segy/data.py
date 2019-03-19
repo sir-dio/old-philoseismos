@@ -40,7 +40,7 @@ class Data:
         """ """
 
         # get the sample interval from BFH:
-        dt = self._segy.BFH.table['Sample Interval'] / 1000
+        dt = self._segy.BFH['Sample Interval'] / 1000
         # pass DataMatrix to wiggle_matrix():
         wiggle_matrix(ax=ax, matrix=self.DM, dt=dt, normalize=normalize)
 
@@ -48,7 +48,7 @@ class Data:
         """ """
 
         # get the sample interval from BFH:
-        dt = self._segy.BFH.table['Sample Interval'] / 1000
+        dt = self._segy.BFH['Sample Interval'] / 1000
         # pass DataMatrix to wiggle_matrix():
         imshow_matrix(ax=ax, matrix=self.DM, dt=dt, normalize=normalize)
 
