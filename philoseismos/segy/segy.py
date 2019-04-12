@@ -77,7 +77,7 @@ class Segy:
 
         sample_format_bytes = self._byteSegy.bfh[24:26]
         try:
-            assert struct.unpack('>h', sample_format_bytes)[0] < 16
+            assert 16 > struct.unpack('>h', sample_format_bytes)[0]
             self.endian = '>'
         except AssertionError:
             self.endian = '<'
