@@ -1,3 +1,5 @@
+[![](https://img.shields.io/pypi/v/philoseismos.svg)](https://pypi.org/project/philoseismos/) [![](https://img.shields.io/pypi/pyversions/philoseismos.svg)](https://pypi.org/project/philoseismos/) [![](https://img.shields.io/pypi/l/philoseismos.svg)](https://pypi.org/project/philoseismos/) [![](https://img.shields.io/pypi/format/philoseismos.svg)](https://pypi.org/project/philoseismos/)
+
 # *philoseismos*
 
 <p align="center">
