@@ -6,7 +6,7 @@ def unpack_ibm32(bytearray_: bytearray, endian: str) -> float:
     """ Unpacks a bytearray containing the 4 byte IBM floating point value.
 
     The way it works is by unpacking a value as a unsigned long and
-    dissasembling it bit by bit. """
+    disassembling it bit by bit. """
 
     # It is 32 bits long. First bit is sign, then 7 bits of exponent,
     # then 24 bits of fraction
@@ -90,7 +90,7 @@ def pack_ibm32(value: float, endian: str) -> bytearray:
     uint = (((sign << 7) | F) << 24) | N
 
     # and finally, we pack the value as a uint:
-    return struct.pack(endian + 'L', uint)
+    return bytearray(struct.pack(endian + 'L', uint))
 
 ##################################################################
 

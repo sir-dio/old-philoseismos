@@ -86,12 +86,12 @@ class Segy:
     # ===== Factory methods ===== #
 
     @classmethod
-    def create_from_DataMatrix(cls, DM, sample_interval=500):
+    def createFromDataMatrix(cls, dm, sample_interval=500):
         """ Creates a Segy object from given 2D matrix.
 
         Parameters
         ----------
-        DM : 2D array
+        dm : 2D array
             DM stands for Data Matrix. It is a simple numpy 2D array where
             each trace is represented by a row.
         sample_interval : int
@@ -103,13 +103,13 @@ class Segy:
         the Segy. The endian is set to big by default, but can be changed
         before saving the file if desired. """
 
-        if DM.ndim != 2:
+        if dm.ndim != 2:
             raise ValueError("The DataMatrix must have exactly 2 dimensions.")
 
         bfh_values = {'Sample Interval': sample_interval,
-                      'Sample Format': data_type_map2[DM.dtype],
-                      'Samples / Trace': DM.shape[1],
-                      '# Traces': DM.shape[0],
+                      'Sample Format': data_type_map2[dm.dtype],
+                      'Samples / Trace': dm.shape[1],
+                      '# Traces': dm.shape[0],
                       'Byte Offset of Data': 3600,
                       'SEG-Y Rev. Major': 2,
                       }
@@ -117,6 +117,6 @@ class Segy:
         segy = cls(endian='>')
 
         segy.BFH._update_from_dictionary(bfh_values)
-        segy.Data._import_DataMatrix(DM)
+        segy.Data._import_DataMatrix(dm)
 
         return segy

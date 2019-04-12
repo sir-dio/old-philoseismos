@@ -74,8 +74,8 @@ class Trace:
         self.Header.set('ELEVSC', 1)
         self.Header.set('# Samples', self.ys.size)
 
-        sample_inteval = self._data._segy.BFH['Sample Interval']
-        self.Header.set('Sample Interval', sample_inteval)
+        sample_interval = self._data._segy.BFH['Sample Interval']
+        self.Header.set('Sample Interval', sample_interval)
         self.Header.set('Coordinate Units', 1)
 
     def _pack_to_bytearray(self):
@@ -105,7 +105,7 @@ class Trace:
     def _get_bytes_from_byteSegy(self):
         """ """
 
-        # caclulate start and end positions:
+        # calculate start and end positions:
         start = (self._data.trace_size_B + 240) * self.id
         end = (self._data.trace_size_B + 240) * (self.id + 1)
 
