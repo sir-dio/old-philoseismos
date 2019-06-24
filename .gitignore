@@ -5,3 +5,4 @@ manual*test.py
 *.sgy
 .idea/*
 sample_data/*
+Notebooks/*
