@@ -1,6 +1,11 @@
+""" philoseismos: with passion for the seismic method.
+
+@author: sir-dio
+e-mail: dubrovin.io@icloud.com """
+
 import numpy as np
 
-# a dictionary that maps sample format codes from BFHs
+# a dictionary that maps sample format codes from BFH
 # to the sample size, formatting letter for packing/unpacking,
 # and a verbose description:
 sample_format_codes = {
@@ -17,11 +22,11 @@ sample_format_codes = {
     16: (1, 'B', '1-byte, unsigned integer')
 }
 
-# strings to unpack a BFHs from bytes to tuples:
-bfh_string = 'iiihhhhhhhhhhhhhhhhhhhhhhhhiiiQQiii'  # first 100 bytes
-bfh_string += 'i' * 50  # unassigned bytes
-bfh_string += 'BBhhihQQi'  # bytes from 300 to 332
-bfh_string += 'i' * 17  # more unassigned bytes
+# strings to unpack a BFH from bytes to tuples using struct.unpack():
+BFH_format_string = 'iiihhhhhhhhhhhhhhhhhhhhhhhhiiiQQiii'  # first 100 bytes
+BFH_format_string += 'i' * 50  # unassigned bytes
+BFH_format_string += 'BBhhihQQi'  # bytes from 300 to 332
+BFH_format_string += 'i' * 17  # more unassigned bytes
 
 # a list of column names that are used when BFHs are created
 BFH_columns = ['Job ID',
@@ -80,10 +85,10 @@ trace_header_str += 'hhhhhhhhhhhhhhhhhhhhiiiiihhihhhhhhhhihh'
 
 # a list that contains names of trace headers that are used
 # to create a geometry DataFrame in the Data object
-trace_header_columns = ['TRACENO',
+trace_header_columns = ['TRACENO',  # unique number of a trace
                         'Trace No. (file)',
-                        'FFID',
-                        'CHAN',
+                        'FFID',  # unique number of the shot
+                        'CHAN',  # channel number
                         'Energy Source No.',
                         'CDP',
                         'Trace No. (ensemble)',
@@ -172,24 +177,25 @@ trace_header_columns = ['TRACENO',
                         'Source Measurement Unit']
 # then a 'Header Name' -> 8 byte of text (ASCII or EBCDIC)
 
-data_type_map1 = {1: np.dtype('float64'),
-                  2: np.dtype('int32'),
-                  3: np.dtype('int16'),
-                  5: np.dtype('float32'),
-                  6: np.dtype('float64'),
-                  8: np.dtype('int8'),
-                  9: np.dtype('int64'),
-                  10: np.dtype('uint32'),
-                  11: np.dtype('uint16')}
-
+# a dictionary that maps sample format codes from BFH
+# to the numpy.dtype for DataMatrix
+data_type_map1 = {1: np.float64,
+                  2: np.int32,
+                  3: np.int16,
+                  5: np.float32,
+                  6: np.float64,
+                  8: np.int8,
+                  9: np.int64,
+                  10: np.uint32,
+                  11: np.uint16}
 
 # a dictionary that maps the dtype of the matrix to
 # the sample format code for BFH
-data_type_map2 = {np.dtype('float32'): 5,
-                  np.dtype('int32'): 2,
-                  np.dtype('int16'): 3,
-                  np.dtype('float64'): 6,
-                  np.dtype('int8'): 8,
-                  np.dtype('int64'): 9,
-                  np.dtype('uint32'): 10,
-                  np.dtype('uint16'): 11}
+data_type_map2 = {np.float32: 5,
+                  np.int32: 2,
+                  np.int16: 3,
+                  np.float64: 6,
+                  np.int8: 8,
+                  np.int64: 9,
+                  np.uint32: 10,
+                  np.uint16: 11}

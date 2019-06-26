@@ -1,5 +1,5 @@
 from philoseismos import Segy
-from philoseismos.segy.tools.constants import bfh_string
+from philoseismos.segy.tools.constants import BFH_format_string
 
 import pytest
 import struct
@@ -9,7 +9,7 @@ import struct
 def segy():
     sgy = Segy()
     bytearray_ = bytearray(3200)
-    bytearray_ += struct.pack('>' + bfh_string, *[i for i in range(111)])
+    bytearray_ += struct.pack('>' + BFH_format_string, *[i for i in range(111)])
     bytearray_ += bytearray(100)
     sgy._byteSegy._load_from_bytearray(bytearray_)
     return sgy
