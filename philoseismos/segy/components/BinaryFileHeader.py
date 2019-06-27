@@ -4,7 +4,7 @@
 e-mail: dubrovin.io@icloud.com """
 
 from philoseismos.segy.tools.constants import BFH_columns, BFH_format_string
-from philoseismos.segy.tools import general_functions as gfunc
+from philoseismos.segy import gfunc
 
 import pandas as pd
 import numpy as np

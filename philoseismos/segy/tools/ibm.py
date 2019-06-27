@@ -1,3 +1,8 @@
+""" philoseismos: with passion for the seismic method.
+
+@author: sir-dio
+e-mail: dubrovin.io@icloud.com """
+
 import struct
 from math import frexp, ceil
 
@@ -5,10 +10,12 @@ from math import frexp, ceil
 def unpack_ibm32(bytearray_: bytearray, endian: str) -> float:
     """ Unpacks a bytearray containing the 4 byte IBM floating point value.
 
-    The way it works is by unpacking a value as a unsigned long and
-    disassembling it bit by bit. """
+    It works by unpacking a value as an unsigned long and
+    disassembling it bit by bit.
 
-    # It is 32 bits long. First bit is sign, then 7 bits of exponent,
+    `"""
+
+    # It is 32 bits long. First bit is a sign, then go 7 bits of exponent,
     # then 24 bits of fraction
 
     # first, unpack the bytes as an unsigned integer -> it will just get all
@@ -38,14 +45,13 @@ def pack_ibm32(value: float, endian: str) -> bytearray:
 
     # first, we check for obvious values:
     if value == 0:
-        return bytes(4)
+        return bytearray(4)
     elif abs(value) > 7.2370051459731155e+75:
-        print('The value is too large to be packed as IBM!')
-        return
+        raise ValueError('The value is too large to be packed as IBM!')
     elif abs(value) < 5.397605346934028e-79:
-        print('The value is too small to be packed as IBM!')
+        raise ValueError('The value is too small to be packed as IBM!')
 
-    # check what the sign bit shoud be:
+    # check what the sign bit should be:
     if value < 0:
         sign = 1
         value *= -1
@@ -92,10 +98,11 @@ def pack_ibm32(value: float, endian: str) -> bytearray:
     # and finally, we pack the value as a uint:
     return bytearray(struct.pack(endian + 'L', uint))
 
+
 ##################################################################
 
 
-def unpack_ibm32_series(bytearray_: bytearray, endian: str) -> tuple:
+def unpack_ibm32_series(endian: str, bytearray_: bytearray) -> tuple:
     """ Unpacks a byterray containing multiple IBM values. """
 
     out = []
