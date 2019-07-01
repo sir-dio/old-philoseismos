@@ -112,7 +112,7 @@ def unpack_ibm32_series(endian: str, bytearray_: bytearray) -> tuple:
     return tuple(out)
 
 
-def pack_ibm32_series(values: list, endian: str) -> bytearray:
+def pack_ibm32_series(endian: str, values: list) -> bytearray:
     """ Packs an array of values into a bytearray of IBM 32 packed bytes. """
 
     out = bytearray(len(values) * 4)

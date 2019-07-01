@@ -9,3 +9,4 @@ from philoseismos.segy.tools.constants import BFH_columns
 from philoseismos.segy.components import TextualFileHeader
 from philoseismos.segy.components import BinaryFileHeader
 from philoseismos.segy.components import DataMatrix
+from philoseismos.segy.components import Geometry

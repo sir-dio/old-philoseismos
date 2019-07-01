@@ -6,6 +6,8 @@ e-mail: dubrovin.io@icloud.com """
 from philoseismos.segy import gfunc
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
 from philoseismos.segy.tools import ibm
+from philoseismos.segy.tools.constants import data_type_map1
+# from philoseismos.segy
 
 import numpy as np
 import struct
@@ -30,10 +32,10 @@ class DataMatrix:
     def load_from_file(self, file):
         """ Returns a Data Matrix object extracted from the file. """
 
-        # endian, format letter, trace length, sample size, number of traces
-        endian, fl, tl, ss, nt = self._get_parameters_from_file(file)
+        # endian, format letter, trace length, sample size, number of traces, numpy data type
+        endian, fl, tl, ss, nt, dtype = self._get_parameters_from_file(file)
 
-        self.matrix = np.empty(shape=(nt, tl))
+        self.matrix = np.empty(shape=(nt, tl), dtype=dtype)
 
         with open(file, 'br') as f:
             f.seek(3600)  # skip Textual and Binary file headers
@@ -54,6 +56,34 @@ class DataMatrix:
                     values = struct.unpack(format_string, raw_trace)
                     self.matrix[i] = values
 
+    # ----- Working with files ----- #
+
+    def replace_in_file(self, file):
+        """ Replaces the traces in the file with self. """
+
+        endian, fl, tl, ss, nt, dtype = self._get_parameters_from_file(file)
+
+        if self.matrix.shape != (nt, tl):
+            raise ValueError('Matrix shape does not fit the file!')
+
+        if self.matrix.dtype != dtype:
+            raise ValueError('Matrix data type does not match the file!')
+
+        with open(file, 'br+') as f:
+            f.seek(3600)
+
+            if not fl:
+                for i in range(nt):
+                    f.seek(f.tell() + 240)
+                    raw_trace = ibm.pack_ibm32_series(endian, self.matrix[i])
+                    f.write(raw_trace)
+            else:
+                format_string = endian + fl * tl
+                for i in range(nt):
+                    f.seek(f.tell() + 240)
+                    raw_trace = struct.pack(format_string, *self.matrix[i])
+                    f.write(raw_trace)
+
     # ----- Dunder methods ----- #
 
     def __repr__(self):
@@ -71,7 +101,7 @@ class DataMatrix:
 
         Returns a tuple:
         (endian, format letter for struct, trace length in samples,
-        sample size, number of traces).
+        sample size, number of traces, numpy data type).
 
         """
 
@@ -90,9 +120,10 @@ class DataMatrix:
         nt = struct.unpack(endian + 'Q', nt_bytes)[0]
 
         sample_size, format_letter, _ = sfc[sf]
+        dtype = data_type_map1[sf]
 
         if nt == 0:
             data_size = os.path.getsize(file) - 3600
             nt = int(data_size / (sample_size * tl + 240))
 
-        return endian, format_letter, tl, sample_size, nt
+        return endian, format_letter, tl, sample_size, nt, dtype
