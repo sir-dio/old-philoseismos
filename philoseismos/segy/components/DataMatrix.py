@@ -7,7 +7,6 @@ from philoseismos.segy import gfunc
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
 from philoseismos.segy.tools import ibm
 from philoseismos.segy.tools.constants import data_type_map1
-# from philoseismos.segy
 
 import numpy as np
 import struct
@@ -30,7 +29,7 @@ class DataMatrix:
     # ----- Loading, writing ----- #
 
     def load_from_file(self, file):
-        """ Returns a Data Matrix object extracted from the file. """
+        """ Returns a DataMatrix object extracted from the file. """
 
         # endian, format letter, trace length, sample size, number of traces, numpy data type
         endian, fl, tl, ss, nt, dtype = self._get_parameters_from_file(file)
@@ -45,7 +44,7 @@ class DataMatrix:
                     f.seek(f.tell() + 240)  # skip trace header
                     raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
 
-                    values = ibm.unpack_ibm32_series(endian, raw_trace)
+                    values = ibm.unpack_ibm32_series(endian, bytearray(raw_trace))
                     self.matrix[i] = values
             else:
                 format_string = endian + fl * tl
@@ -55,8 +54,6 @@ class DataMatrix:
 
                     values = struct.unpack(format_string, raw_trace)
                     self.matrix[i] = values
-
-    # ----- Working with files ----- #
 
     def replace_in_file(self, file):
         """ Replaces the traces in the file with self. """

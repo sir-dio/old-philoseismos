@@ -62,17 +62,11 @@ class BinaryFileHeader:
         """ Replaces the Binary File Header in the file with self. """
 
         endian = gfunc.get_endianness(file)
+        self._update_bytes(endian)
 
-        full_format_string = endian + BFH_format_string
-        self._bytes = struct.pack(full_format_string, *self.table.values)
-
-        with open(file, 'br') as f:
-            file_content = bytearray(f.read())
-
-        file_content[3200:3600] = self._bytes
-
-        with open(file, 'bw') as f:
-            f.write(file_content)
+        with open(file, 'br+') as f:
+            f.seek(3200)
+            f.write(self._bytes)
 
         # --- Text files --- #
 
@@ -113,3 +107,11 @@ class BinaryFileHeader:
 
     def __setitem__(self, key, value):
         self.table[key] = value
+
+    # ----- Internal methods ----- #
+
+    def _update_bytes(self, endian):
+        """ Updates self._bytes by packing self.table. """
+
+        full_format_string = endian + BFH_format_string
+        self._bytes = struct.pack(full_format_string, *self.table.values)
