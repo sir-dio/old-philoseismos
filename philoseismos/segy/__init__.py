@@ -10,3 +10,4 @@ from philoseismos.segy.components import TextualFileHeader
 from philoseismos.segy.components import BinaryFileHeader
 from philoseismos.segy.components import DataMatrix
 from philoseismos.segy.components import Geometry
+from philoseismos.segy.components import Segy

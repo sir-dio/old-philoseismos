@@ -27,6 +27,7 @@ class BinaryFileHeader:
         """ Create an empty Binary File Header object. """
 
         self._bytes = None
+        self.endian = None
 
         self.table = pd.Series(index=BFH_columns, dtype=np.int64)
         self.table.fillna(0, inplace=True)
@@ -34,14 +35,22 @@ class BinaryFileHeader:
     # ----- Loading, writing ----- #
 
     def load_from_file(self, file):
-        """ Loads the bytes representing a Binary File Header. """
-
-        endian = gfunc.get_endianness(file)
-        full_format_string = endian + BFH_format_string
+        """ Loads Binary File Header from file into self. """
 
         with open(file, 'br') as f:
             f.seek(3200)
-            self._bytes = f.read(400)
+            bytes = f.read(400)
+
+        self.load_from_bytes(bytes)
+
+    def load_from_bytes(self, bytes):
+        """ Loads and unpacks the bytes given into self. """
+
+        self._bytes = bytes
+
+        endian = gfunc._detect_endianness_from_sample_format_bytes(self._bytes[24:26])
+        full_format_string = endian + BFH_format_string
+        self.endian = endian
 
         unpacked = struct.unpack(full_format_string, self._bytes)
         table = pd.Series(index=BFH_columns, data=unpacked)

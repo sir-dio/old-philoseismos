@@ -29,9 +29,28 @@ class TextualFileHeader:
         """ Loads the bytes representing a Textual File Header. """
 
         with open(file, 'br') as f:
-            self._bytes = f.read(3200)
+            bytes = f.read(3200)
 
-        self.text = self._bytes.decode(self.encoding)
+        self.load_from_bytes(bytes)
+
+    def replace_in_file(self, file):
+        """ Replaces the Textual File Header in the file with self. """
+
+        self._bytes = self.text.encode(self.encoding)
+
+        with open(file, 'br') as f:
+            file_content = bytearray(f.read())
+
+        file_content[:3200] = self._bytes
+
+        with open(file, 'bw') as f:
+            f.write(file_content)
+
+    def load_from_bytes(self, bytes):
+        """ Unpacks given bytes into self. """
+
+        self._bytes = bytes
+        self.text = bytes.decode(self.encoding)
         self.lines = [self.text[i * 80: (i + 1) * 80] for i in range(40)]
 
     def redecode(self):
@@ -61,22 +80,7 @@ class TextualFileHeader:
 
         self._bytes = self.text.encode(self.encoding)
 
-    # ----- Working with files ----- #
-
-    def replace_in_file(self, file):
-        """ Replaces the Textual File Header in the file with self. """
-
-        self._bytes = self.text.encode(self.encoding)
-
-        with open(file, 'br') as f:
-            file_content = bytearray(f.read())
-
-        file_content[:3200] = self._bytes
-
-        with open(file, 'bw') as f:
-            f.write(file_content)
-
-        # --- Text files --- #
+    # ----- Working with other files ----- #
 
     def export_to_txt(self, file):
         """ Saves the content of the Textual File Header in .txt format.
