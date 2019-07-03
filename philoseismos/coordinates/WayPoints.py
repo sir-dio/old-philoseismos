@@ -77,7 +77,7 @@ class WayPoints:
         self.table.loc[:, 'Map display format'] = 3  # 1 is name only, 3 is name with dot
         self.table.loc[:, 'FG color'] = 0  # black
         self.table.loc[:, 'BG color'] = 65535  # yellow
-        self.table.loc[:, 'Description'] = ''
+        self.table.loc[:, 'Description'] = csv.loc[:, 'Mark']
         self.table.loc[:, 'Pointer direction'] = 0  # down
         self.table.loc[:, 'Garmin display format'] = 0
         self.table.loc[:, 'Proximity distance'] = csv.loc[:, 'Coord. Precision']
