@@ -126,6 +126,7 @@ class Geometry:
         self.table.loc[negative_scalar_indices, 'REC_Y'] /= absolute_scalar_value
         self.table.loc[negative_scalar_indices, 'CDP_X'] /= absolute_scalar_value
         self.table.loc[negative_scalar_indices, 'CDP_Y'] /= absolute_scalar_value
+        self.table.loc[negative_scalar_indices, 'OFFSET'] /= absolute_scalar_value
 
         # if positive, to be used as a multiplier
         positive_scalar_indices = self.table.COORDSC > 0
@@ -136,6 +137,7 @@ class Geometry:
         self.table.loc[positive_scalar_indices, 'REC_Y'] *= absolute_scalar_value
         self.table.loc[positive_scalar_indices, 'CDP_X'] *= absolute_scalar_value
         self.table.loc[positive_scalar_indices, 'CDP_Y'] *= absolute_scalar_value
+        self.table.loc[positive_scalar_indices, 'OFFSET'] *= absolute_scalar_value
 
     def _apply_coordinates_scalar_before_packing(self):
         """ Applies the coordinate scalar to all relevant headers before packing. """
@@ -154,6 +156,7 @@ class Geometry:
         self.table.loc[negative_scalar_indices, 'REC_Y'] *= absolute_scalar_value
         self.table.loc[negative_scalar_indices, 'CDP_X'] *= absolute_scalar_value
         self.table.loc[negative_scalar_indices, 'CDP_Y'] *= absolute_scalar_value
+        self.table.loc[negative_scalar_indices, 'OFFSET'] *= absolute_scalar_value
 
         # when unpacking, if positive, to be used as a multiplier,
         # so here we divide
@@ -165,6 +168,7 @@ class Geometry:
         self.table.loc[positive_scalar_indices, 'REC_Y'] /= absolute_scalar_value
         self.table.loc[positive_scalar_indices, 'CDP_X'] /= absolute_scalar_value
         self.table.loc[positive_scalar_indices, 'CDP_Y'] /= absolute_scalar_value
+        self.table.loc[positive_scalar_indices, 'OFFSET'] /= absolute_scalar_value
 
         # since these headers have to be integers, we transform them
         self.table.loc[:, 'SOU_X'] = np.int64(self.table['SOU_X'].values)
@@ -173,3 +177,4 @@ class Geometry:
         self.table.loc[:, 'REC_Y'] = np.int64(self.table['REC_Y'].values)
         self.table.loc[:, 'CDP_X'] = np.int64(self.table['CDP_X'].values)
         self.table.loc[:, 'CDP_Y'] = np.int64(self.table['CDP_Y'].values)
+        self.table.loc[:, 'OFFSET'] = np.int64(self.table['OFFSET'].values)

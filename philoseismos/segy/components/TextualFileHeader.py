@@ -65,9 +65,9 @@ class TextualFileHeader:
     def set_content(self, content):
         """ Set the content for the Textual File Header. """
 
-        # crop and pad the content
-        self.text = content[:3200].ljust(3200)
-        self.lines = [self.text[i * 80: (i + 1) * 80] for i in range(40)]
+        lines = content.split('\n')
+        self.lines = [line[:80].ljust(80) for line in lines]
+        self.text = ''.join(self.lines)
 
         self._bytes = self.text.encode(self.encoding)
 
