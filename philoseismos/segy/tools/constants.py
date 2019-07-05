@@ -1,6 +1,9 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+This file is a collection of constants that are used in different parts
+of the philoseismos.segy package.
+
+@author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 
 import numpy as np

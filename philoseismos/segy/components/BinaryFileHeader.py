@@ -1,6 +1,9 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+This file defines a BinaryFileHeader object that represents
+a Binary File Header from a SEG-Y file.
+
+@author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 
 from philoseismos.segy.tools.constants import BFH_columns, BFH_format_string
@@ -87,12 +90,12 @@ class BinaryFileHeader:
         """
 
         self.table = pd.Series(index=BFH_columns, dtype=np.int64)
-        self.table.fillna(0, inplace=True)
 
         imported = pd.read_csv(file, squeeze=True, index_col=0, header=None,
                                skipinitialspace=True, names=['Field', 'BFH'])
 
         self.table.update(imported)
+        self.table.fillna(0, inplace=True)
 
     # ----- Dunder methods ----- #
 

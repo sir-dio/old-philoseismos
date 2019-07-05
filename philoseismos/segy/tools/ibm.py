@@ -1,6 +1,9 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+This file defines a set of functions for packing and unpacking IBM
+floating point values.
+
+@author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 
 import struct
@@ -10,7 +13,7 @@ from math import frexp, ceil
 def unpack_ibm32(bytearray_: bytearray, endian: str) -> float:
     """ Unpacks a bytearray containing the 4 byte IBM floating point value.
 
-    It works by unpacking a value as an unsigned long and
+    Works by unpacking a value as an unsigned long and
     disassembling it bit by bit.
 
     `"""

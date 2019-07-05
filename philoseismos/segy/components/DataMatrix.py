@@ -1,6 +1,9 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+This file defines a DataMatrix object that stores the traces in form
+of a numpy 2D array.
+
+@author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 
 from philoseismos.segy import gfunc

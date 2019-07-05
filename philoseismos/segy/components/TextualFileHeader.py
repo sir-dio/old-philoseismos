@@ -1,5 +1,8 @@
 """ philoseismos: with passion for the seismic method.
 
+This file defines the TextualFileHeader object that represents
+a Textual File Header of a SEG-Y file.
+
 @author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 

@@ -6,11 +6,11 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 NAME = 'philoseismos'
-DESCRIPTION = 'A toolbox for near-surface seismics'
+DESCRIPTION = 'A toolbox for near-surface seismology'
 URL = 'https://github.com/sir-dio/philoseismos'
 EMAIL = 'dubrovin.io@icloud.com'
 AUTHOR = 'Ivan Dubrovin'
-REQUIRES_PYTHON = '>=3.7.0'
+REQUIRES_PYTHON = '>=3.6.0'
 VERSION = "0.0.1"
 
 # What packages are required for this module to be executed?

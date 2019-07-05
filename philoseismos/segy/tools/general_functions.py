@@ -1,6 +1,6 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+@author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 
 from philoseismos.segy.tools.constants import sample_format_codes as sfc

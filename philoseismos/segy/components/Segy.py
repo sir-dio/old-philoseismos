@@ -1,6 +1,9 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+This file defines the most important object in the philoseismos.segy package:
+the Segy object.
+
+@author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 
 from philoseismos.segy.components import TextualFileHeader, BinaryFileHeader
