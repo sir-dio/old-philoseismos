@@ -24,8 +24,14 @@ class WayPoints:
         self.version = 'OziExplorer Waypoint File Version 1.1'
         self.datum = 'WGS84'
 
+        self.csv_format = 'sputnik'
+
         if file:
-            self.load_from_file(file)
+            if '.wpt' in file:
+                self.load_from_file(file)
+            elif '.csv' in file:
+                if self.csv_format == 'sputnik':
+                    self.import_sputnik_csv(file)
 
     # ----- Loading and writing ----- #
 
@@ -38,7 +44,7 @@ class WayPoints:
 
         self.table = pd.read_csv(file, skiprows=4, skipinitialspace=True, names=const.wpt_columns)
 
-    def save_to_file(self, file):
+    def save_to_file(self, file, name_contains=None):
         """ Saves a .wpt file. """
 
         with open(file, 'w') as f:
@@ -46,6 +52,15 @@ class WayPoints:
             f.write(self.datum + '\n')  # second line is geodetic datum used for the lat/lon positions
             f.write('Reserved 2\n\n')  # third and fourth lines are reserved for future use
 
+        # filter by name
+        if name_contains:
+            filter_func = np.vectorize(lambda x: name_contains in x)
+            indices = filter_func(self.table.Name)
+            out = self.table.loc[indices, :]
+            out.to_csv(file, mode='a', header=False, index=False)
+            return
+
+        # when no filters are specified
         self.table.to_csv(file, mode='a', header=False, index=False)
 
     # ----- Working with other file formats ----- #
@@ -95,4 +110,4 @@ class WayPoints:
     # ----- Dunder methods ----- #
 
     def __repr__(self):
-        return str(self.table.loc[:, ['No.', 'Name', 'Latitude', 'Longitude', 'Altitude', 'Proximity Distance']])
+        return str(self.table.loc[:, ['No.', 'Name', 'Latitude', 'Longitude', 'Altitude', 'Description']])
