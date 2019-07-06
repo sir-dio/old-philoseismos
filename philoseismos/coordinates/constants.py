@@ -1,9 +1,12 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+This file contains a collection of constants that are used throughout the
+philoseismos.coordinates package.
+
+@author: Dubrovin Ivan
 e-mail: dubrovin.io@icloud.com """
 
-wpt_columns = [ # the comments are from the OziExplorer documentation
+wpt_columns = [  # the comments are from the OziExplorer documentation
     'No.',
     'Name',
     'Latitude',  # in decimal degrees

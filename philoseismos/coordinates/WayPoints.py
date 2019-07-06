@@ -1,6 +1,9 @@
 """ philoseismos: with passion for the seismic method.
 
-@author: sir-dio
+This file defines the WayPoints class representing a .wpt file used in OziExplorer
+to store GPS data.
+
+@author: Ivan Dubrovin
 e-mail: dubrovin.io@icloud.com """
 
 from philoseismos.coordinates import constants as const
