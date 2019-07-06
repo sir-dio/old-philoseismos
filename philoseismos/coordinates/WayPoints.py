@@ -44,7 +44,7 @@ class WayPoints:
 
         self.table = pd.read_csv(file, skiprows=4, skipinitialspace=True, names=const.wpt_columns)
 
-    def save_to_file(self, file, name_contains=None):
+    def save_to_file(self, file, name_contains=None, name_doesnt_contain=None):
         """ Saves a .wpt file. """
 
         with open(file, 'w') as f:
@@ -55,6 +55,13 @@ class WayPoints:
         # filter by name
         if name_contains:
             filter_func = np.vectorize(lambda x: name_contains in x)
+            indices = filter_func(self.table.Name)
+            out = self.table.loc[indices, :]
+            out.to_csv(file, mode='a', header=False, index=False)
+            return
+
+        if name_doesnt_contain:
+            filter_func = np.vectorize(lambda x: name_doesnt_contain not in x)
             indices = filter_func(self.table.Name)
             out = self.table.loc[indices, :]
             out.to_csv(file, mode='a', header=False, index=False)
