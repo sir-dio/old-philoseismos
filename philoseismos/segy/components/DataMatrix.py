@@ -28,11 +28,33 @@ class DataMatrix:
         """ """
 
         self.matrix = None
+        self.normalization_mode = 'individual'  # can also be "whole"
+
+    # ----- Normalized ----- #
+    @property
+    def normalized(self):
+        """ Returns a normalized version of self.matrix.
+
+        Normalization is individual, meaning that each trace is divided by
+        its own maximum value.
+
+        """
+
+        factor = self.matrix.max(axis=1)
+        factor[factor == 0] = 1
+        return self.matrix / factor[:, np.newaxis]
 
     # ----- Loading, writing ----- #
 
     def load_from_file(self, file):
-        """ Returns a DataMatrix object extracted from the file. """
+        """ Returns a DataMatrix object extracted from the file.
+
+        Parameters
+        ----------
+        file : str
+            Path to the SEG-Y file to extract Data Matrix from.
+
+        """
 
         # endian, format letter, trace length, sample size, number of traces, numpy data type
         endian, fl, tl, ss, nt, dtype = self._get_parameters_from_file(file)
@@ -59,7 +81,13 @@ class DataMatrix:
                     self.matrix[i] = values
 
     def replace_in_file(self, file):
-        """ Replaces the traces in the file with self. """
+        """ Replaces the traces in the file with self.
+
+        Parameters
+        ----------
+        file : str
+            Path to the SEG-Y file to replace Data Matrix in.
+        """
 
         endian, fl, tl, ss, nt, dtype = self._get_parameters_from_file(file)
 
@@ -99,9 +127,25 @@ class DataMatrix:
         defined in philoseismos.segy.gfunc, this method is an alternative
         which only opens the file once, not once per value.
 
-        Returns a tuple:
-        (endian, format letter for struct, trace length in samples,
-        sample size, number of traces, numpy data type).
+        Parameters
+        ----------
+        file : str
+            Path to the SEG-Y file to extract parameters from.
+
+        Returns
+        -------
+        endian : str
+            Either '>' or '<', for big and little endian respectively.
+        format_letter : str
+           Format letter used in struct module to pack and unpack binary data.
+        tl : int
+            Trace length in samples.
+        sample_size : int
+            Size of one sample in bytes.
+        nt : int
+            Number of traces in the file.
+        dtype : type
+            Data type to create a matrix with.
 
         """
 

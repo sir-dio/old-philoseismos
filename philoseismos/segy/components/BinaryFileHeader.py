@@ -18,11 +18,9 @@ import struct
 class BinaryFileHeader:
     """ Binary File Header for the SEG-Y file.
 
-    Binary File Header consists of 400 bytes of binary values relevant
-    to the whole SEG-Y file.
-    Certain values in this header are crucial for the processing
-    of the data in the file, particularly the sample interval, trace
-    length and sample format code.
+    Binary File Header consists of 400 bytes of binary values relevant to the whole SEG-Y file.
+    Certain values in this header are crucial for the processing of the data in the file,
+    particularly the sample interval, trace length and sample format code.
 
      """
 
@@ -38,7 +36,14 @@ class BinaryFileHeader:
     # ----- Loading, writing ----- #
 
     def load_from_file(self, file):
-        """ Loads Binary File Header from file into self. """
+        """ Loads Binary File Header from file into self.
+
+        Parameters
+        ----------
+        file : str
+            Path to the SEG-Y file to extract Binary File Header from.
+
+        """
 
         with open(file, 'br') as f:
             f.seek(3200)
@@ -47,7 +52,14 @@ class BinaryFileHeader:
         self.load_from_bytes(bytes)
 
     def load_from_bytes(self, bytes):
-        """ Loads and unpacks the bytes given into self. """
+        """ Loads and unpacks the bytes given into self.
+
+        Parameters
+        ----------
+        bytes : bytes
+            400 bytes of Binary File header to unpack into self.
+
+        """
 
         self._bytes = bytes
 
@@ -62,7 +74,14 @@ class BinaryFileHeader:
     # ----- Working with files ----- #
 
     def replace_in_file(self, file):
-        """ Replaces the Binary File Header in the file with self. """
+        """ Replaces the Binary File Header in the file with self.
+
+        Parameters
+        ----------
+        file : str
+            Path to the SEG-Y file to replace Binary File Header in.
+
+        """
 
         endian = gfunc.get_endianness(file)
         self._update_bytes(endian)
@@ -76,16 +95,31 @@ class BinaryFileHeader:
     def export_to_csv(self, file):
         """ Saves the content of the Binary File Header in .csv format.
 
-        Each line contains a key-value pair separated by a comma. """
+        Parameters
+        ----------
+        file : str
+            A path and a name of a file to export self to.
+
+        Notes
+        -----
+        In the created .csv file each line contains a key-value pair separated by a comma.
+
+        """
 
         self.table.to_csv(file)
 
     def import_from_csv(self, file):
-        """ Loads the content from the .txt file.
+        """ Loads the content from the .csv file.
 
-        File should have each key-value pair on separate lines,
-        separated by a colon. Missing or incorrectly specified keys
-        will be assigned the value of 0.
+        Parameters
+        ----------
+        file : str
+            Path to the file to import.
+
+        Notes
+        -----
+        File should have each key-value pair on separate lines, separated by a colon.
+        Missing or incorrectly specified keys will be assigned the value of 0.
 
         """
 
