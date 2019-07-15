@@ -5,19 +5,22 @@ from shutil import rmtree
 
 from setuptools import find_packages, setup, Command
 
+"""
+To update the package on PyPI, use `python setup.py upload`
+"""
+
 NAME = 'philoseismos'
 DESCRIPTION = 'A toolbox for near-surface seismology'
 URL = 'https://github.com/sir-dio/philoseismos'
 EMAIL = 'dubrovin.io@icloud.com'
 AUTHOR = 'Ivan Dubrovin'
-REQUIRES_PYTHON = '>=3.6.0'
-VERSION = "0.0.1"
+REQUIRES_PYTHON = '>=3.5.0'
+VERSION = "0.1.0"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     "numpy",
     "pandas",
-    "tqdm"
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -87,6 +90,8 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
