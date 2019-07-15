@@ -17,26 +17,21 @@
     Seismic Data Analysis </font>
 </p>
 
-## packages
-The only package in the library so far is the **`Segy`** package.  
-It introduces the **`Segy`** class that allows reading the most popular land seismic data format - **SEG-Y**.
+*philoseismos is a toolbox library for a near-surface seismologists.*
 
-## Segy
-One of the main things **_philoseismos_** library offers is the **`Segy`** class,
-that allows reading seismic data in the SEG-Y format.
+## Working with .sgy files
+One of the most important parts of the philoseismos library is a segy package
+that defines a `Segy` class representing a .sgy file. It separates the files into its
+main components: Textual file header, Binary file header, Data matrix (contains the traces in
+numpy matrix form) and Geometry (contains the trace headers in pandas DataFrame form).
+
+Loading a Segy file is as simple as it gets:
 ```python
 from philoseismos import Segy
 
-t = Segy('a_segy_to_read.sgy')
+a = Segy('PR0001_P0001_R0001.sgy')
 ```
-A **`Segy`** object consists of three main parts, which corresponding to an element of the **SEG-Y** format
-*(defined in [this document][1])*:
-* **Textual File Header** object (`t.TFH`), that is meant to provide a human-readable description of the
-seismic data in the file. The `t.TFH` object contains this description in the text form and allows reading and modifying it.
-* **Binary File Header** object (`t.BFH`), that contains binary values relevant to the whole file,
-like *sample format* and *trace length*.
-* **Data** object (`t.Data`), that contains all the traces and trace headers in the file.
 
-A full description of the class and its functionality will be provided in the docs _(now are in the process of being written)_.
-
-[1]: https://seg.org/Portals/0/SEG/News%20and%20Resources/Technical%20Standards/seg_y_rev2_0-mar2017.pdf "SEG-Y revision 2.0 Data Exchange format"
+## Working with .wpt files
+The philoseismos.coordinates package defines another useful class: `WayPoints`,
+that represents a .wpt file used in OziExplorer.
