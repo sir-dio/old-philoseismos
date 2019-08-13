@@ -1,8 +1,7 @@
 .DS_Store
 *__pycache__*
 *.pyc
-manual*test.py
-*.sgy
 .idea/*
-sample_data/*
-Notebooks/*
+build/
+dist/
+philoseismos.egg-info/
