@@ -31,10 +31,9 @@ class TextualFileHeader:
     def load_from_file(self, file):
         """ Loads the bytes representing a Textual File Header.
 
-        Parameters
-        ----------
-        file : str
-            Path to the file to load the Textual File Header from.
+        Arguments
+            file (str)
+                Path to the file to load the Textual File Header from.
 
         """
 
@@ -46,10 +45,9 @@ class TextualFileHeader:
     def replace_in_file(self, file):
         """ Replaces the Textual File Header in the file with self.
 
-        Parameters
-        ----------
-        file : str
-            Path to the file to replace Textual File Header in.
+        Arguments
+            file (str)
+                Path to the file to replace Textual File Header in.
 
         """
 
@@ -66,10 +64,9 @@ class TextualFileHeader:
     def load_from_bytes(self, bytes):
         """ Unpacks given bytes into self.
 
-        Parameters
-        ----------
-        bytes : bytes
-            Bytes to decode.
+        Arguments
+            bytes (bytes)
+                Bytes to decode.
 
         """
 
@@ -89,18 +86,16 @@ class TextualFileHeader:
     def set_content(self, content):
         """ Set the content for the Textual File Header.
 
-        Parameters
-        ----------
-        content : str
-            New content for the Textual File Header.
+        Arguments
+            content (str)
+                New content for the Textual File Header.
 
         Notes
-        -----
-        Textual File Header has to contain exactly 3200 characters: 40 lines, 80 symbols each.
+            Textual File Header has to contain exactly 3200 characters: 40 lines, 80 symbols each.
 
-        The given content is splitted into lines by a new line symbol. If there are more than 40,
-        only the first 40 are taken. Each line is then set to be exactly 80 characters long.
-        If there are less then 40 lines, empty lines are added.
+            The given content is splitted into lines by a new line symbol. If there are more than 40,
+            only the first 40 are taken. Each line is then set to be exactly 80 characters long.
+            If there are less then 40 lines, empty lines are added.
 
         """
 
@@ -117,17 +112,15 @@ class TextualFileHeader:
     def set_line(self, line_no, content):
         """ Set the content for a specific line.
 
-        Parameters
-        ----------
-        line_no : int
-            Number of the line to change (starting from 1).
-        content : str
-            New content for the line.
+        Arguments
+            line_no (int)
+                Number of the line to change (starting from 1).
+            content (str)
+                New content for the line.
 
         Notes
-        -----
-        Since each line in Textual File Header is exactly 80 characters, the content is cropped
-        or padded with spaces.
+            Since each line in Textual File Header is exactly 80 characters, the content is cropped
+            or padded with spaces.
 
         """
 
@@ -142,14 +135,12 @@ class TextualFileHeader:
     def export_to_txt(self, file):
         """ Saves the content of the Textual File Header in .txt format.
 
-        Parameters
-        ----------
-        file : str
-            Path and name of the file to export Textual File Header to.
+        Arguments
+            file (str)
+                Path and name of the file to export Textual File Header to.
 
         Notes
-        -----
-        Lines are separated.
+            Lines are separated.
 
         """
 
@@ -160,14 +151,12 @@ class TextualFileHeader:
     def import_from_txt(self, file):
         """ Loads the content from the .txt file.
 
-        Parameters
-        ----------
-        file : str
-            Path to the file to import Textual File Header from.
+        Arguments
+            file (str)
+                Path to the file to import Textual File Header from.
 
         Notes
-        -----
-        Reads 40 lines, 80 characters each, and combines them.
+            Reads 40 lines, 80 characters each, and combines them.
 
         """
 
