@@ -28,12 +28,11 @@ class TextualFileHeader:
 
     # ----- Loading, decoding, writing ----- #
 
-    def load_from_file(self, file):
+    def load_from_file(self, file: str):
         """ Loads the bytes representing a Textual File Header.
 
-        Arguments
-            file (str)
-                Path to the file to load the Textual File Header from.
+        Args:
+            file: Path to the .sgy file.
 
         """
 
@@ -42,12 +41,11 @@ class TextualFileHeader:
 
         self.load_from_bytes(bytes)
 
-    def replace_in_file(self, file):
+    def replace_in_file(self, file: str):
         """ Replaces the Textual File Header in the file with self.
 
-        Arguments
-            file (str)
-                Path to the file to replace Textual File Header in.
+        Args:
+            file: Path to the .sgy file.
 
         """
 
@@ -61,36 +59,37 @@ class TextualFileHeader:
         with open(file, 'bw') as f:
             f.write(file_content)
 
-    def load_from_bytes(self, bytes):
+    def load_from_bytes(self, bts: bytes):
         """ Unpacks given bytes into self.
 
-        Arguments
-            bytes (bytes)
-                Bytes to decode.
+        Args:
+            bts: Bytes to decode.
 
         """
 
-        self._bytes = bytes
-        self.text = bytes.decode(self.encoding)
+        self._bytes = bts
+        self.text = bts.decode(self.encoding)
         self.lines = [self.text[i * 80: (i + 1) * 80] for i in range(40)]
 
     def redecode(self):
-        """ Decodes bytes, loaded from file, using the endoding..
+        """ Redecodes stored bytes using the self.encoding.
 
-        Can be useful if the encoding was changed, to reset the .text attribute. """
+        Notes:
+            Can be useful if the encoding was changed, to reset the .text attribute.
+
+         """
 
         self.text = self._bytes.decode(self.encoding)
 
     # ----- Modifying content ----- #
 
-    def set_content(self, content):
+    def set_content(self, content: str):
         """ Set the content for the Textual File Header.
 
-        Arguments
-            content (str)
-                New content for the Textual File Header.
+        Args:
+            content: New content for the Textual File Header.
 
-        Notes
+        Notes:
             Textual File Header has to contain exactly 3200 characters: 40 lines, 80 symbols each.
 
             The given content is splitted into lines by a new line symbol. If there are more than 40,
@@ -109,16 +108,13 @@ class TextualFileHeader:
 
         self._bytes = self.text.encode(self.encoding)
 
-    def set_line(self, line_no, content):
+    def set_line(self, line_no: int, content: str):
         """ Set the content for a specific line.
 
-        Arguments
-            line_no (int)
-                Number of the line to change (starting from 1).
-            content (str)
-                New content for the line.
-
-        Notes
+        Args:
+            line_no: Line number (starting from 1).
+            content: New content for the line.
+        Notes:
             Since each line in Textual File Header is exactly 80 characters, the content is cropped
             or padded with spaces.
 
@@ -132,15 +128,14 @@ class TextualFileHeader:
 
     # ----- Working with other files ----- #
 
-    def export_to_txt(self, file):
+    def export_to_txt(self, file: str):
         """ Saves the content of the Textual File Header in .txt format.
 
-        Arguments
-            file (str)
-                Path and name of the file to export Textual File Header to.
+        Args:
+            file: Path and name of the file to export Textual File Header to.
 
-        Notes
-            Lines are separated.
+        Notes:
+            Each line will be on its own line.
 
         """
 
@@ -148,14 +143,13 @@ class TextualFileHeader:
             for line in self.lines:
                 f.write(line + '\n')
 
-    def import_from_txt(self, file):
+    def import_from_txt(self, file: str):
         """ Loads the content from the .txt file.
 
-        Arguments
-            file (str)
-                Path to the file to import Textual File Header from.
+        Args:
+            file: Path to the file to import Textual File Header from.
 
-        Notes
+        Notes:
             Reads 40 lines, 80 characters each, and combines them.
 
         """

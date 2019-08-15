@@ -18,18 +18,10 @@ import pandas as pd
 
 
 class Segy:
-    """ Object that represents a SEG-Y file.
-
-    Fathers all the components: Textual and Binary Headers, DataMatrix, Geometry.
-
-    """
+    """ Object that represents a SEG-Y file. """
 
     def __init__(self, file=None):
-        """ Creates an empty Segy object.
-
-        If file is specified, loads the contents from that file.
-
-        """
+        """ Creates an empty Segy object or loads a file. """
 
         self.file = file
 
@@ -42,6 +34,9 @@ class Segy:
             self.load_file(file)
 
     # ----- Loading and writing ----- #
+
+    def test_coverage(self):
+        print(self)
 
     def load_file(self, file):
         """ Loads specified .sgy file into self. """
