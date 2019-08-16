@@ -11,6 +11,7 @@ from philoseismos.segy.components import DataMatrix, Geometry
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
 from philoseismos.segy.tools import ibm
 from philoseismos.segy.tools.constants import TH_format_string, TH_columns, pack_pbar_params
+from philoseismos.segy.tools import general_functions as gfunc
 
 import struct
 import numpy as np
@@ -111,20 +112,27 @@ class Segy:
 
     @classmethod
     def empty_like(cls, file):
-        """ Returns an empty Segy with same parameters as the specified file.
+        """ Returns an empty Segy with same parameters as the specified file. """
 
-        Basically it reads the file into self and multiplies the Data Matrix by 0."""
+        out = cls()
 
-        out = cls(file)
-        out.file = None
+        nt = gfunc.get_number_of_traces(file)
+        si = gfunc.get_sample_interval(file)
+        ns = gfunc.get_trace_length(file)
 
-        out.BFH.table['Traces / Ensemble'] = out.DM.matrix.shape[0]
+        out.TFH.set_content('Created in philoseismos! With love to programming and seismology.')
+
+        out.BFH.table['Traces / Ensemble'] = nt
+        out.BFH.table['Sample Interval'] = si
+        out.BFH.table['Samples / Trace'] = ns
         out.BFH.table['Sample Format'] = 5
 
-        out.DM.matrix *= 0
+        out.DM.matrix = np.zeros((nt, ns), dtype=np.float32)
 
+        out.G.table = pd.DataFrame(index=range(nt), columns=TH_columns)
         out.G.table.loc[:, 'FFID'] = 1
-        out.G.table.loc[:, 'CHAN'] = range(1, out.DM.matrix.shape[0] + 1)
+        out.G.table.loc[:, 'CHAN'] = range(1, nt + 1)
+        out.G.table.fillna(0, inplace=True)
 
         return out
 

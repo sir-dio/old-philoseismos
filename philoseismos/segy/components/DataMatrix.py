@@ -26,14 +26,14 @@ class DataMatrix:
 
      """
 
-    def __init__(self, file=None):
+    def __init__(self, file=None, progress=False):
         """ """
 
         self.matrix = None
         self.normalization_mode = 'individual'  # can also be "whole"
 
         if file:
-            self.load_from_file(file)
+            self.load_from_file(file, progress=progress)
 
     # ----- Normalized ----- #
     @property
