@@ -24,7 +24,7 @@ class Segy:
 
     """
 
-    def __init__(self, file=None):
+    def __init__(self, file=None, progress=False):
         """ Creates an empty Segy object.
 
         If file is specified, loads the contents from that file.
@@ -39,16 +39,16 @@ class Segy:
         self.G = Geometry()
 
         if file:
-            self.load_file(file)
+            self.load_file(file, progress=progress)
 
     # ----- Loading and writing ----- #
 
-    def load_file(self, file):
+    def load_file(self, file, progress=False):
         """ Loads specified .sgy file into self. """
 
         self.TFH.load_from_file(file)
         self.BFH.load_from_file(file)
-        self.DM.load_from_file(file)
+        self.DM.load_from_file(file, progress=progress)
         self.G.load_from_file(file)
 
     def save_file(self, file, endian='>'):

@@ -9,11 +9,13 @@ e-mail: dubrovin.io@icloud.com """
 from philoseismos.segy import gfunc
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
 from philoseismos.segy.tools import ibm
-from philoseismos.segy.tools.constants import data_type_map1
+from philoseismos.segy.tools.constants import data_type_map1, progress_bar_params
 
 import numpy as np
 import struct
 import os.path
+
+from tqdm import tqdm
 
 
 class DataMatrix:
@@ -46,13 +48,12 @@ class DataMatrix:
 
     # ----- Loading, writing ----- #
 
-    def load_from_file(self, file):
+    def load_from_file(self, file, progress=False):
         """ Returns a DataMatrix object extracted from the file.
 
-        Parameters
-        ----------
-        file : str
-            Path to the SEG-Y file to extract Data Matrix from.
+        Args:
+            file: A path to the file.
+            progress: Toggle the progress bar (disabled by default).
 
         """
 
@@ -65,20 +66,42 @@ class DataMatrix:
             f.seek(3600)  # skip Textual and Binary file headers
 
             if not fl:  # for IBM values format letter is None
-                for i in range(nt):
-                    f.seek(f.tell() + 240)  # skip trace header
-                    raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
+                if progress:
+                    with tqdm(total=nt, **progress_bar_params) as pbar:
+                        for i in range(nt):
+                            f.seek(f.tell() + 240)  # skip trace header
+                            raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
 
-                    values = ibm.unpack_ibm32_series(endian, bytearray(raw_trace))
-                    self.matrix[i] = values
+                            values = ibm.unpack_ibm32_series(endian, bytearray(raw_trace))
+                            self.matrix[i] = values
+                            pbar.update(1)
+                else:
+                    for i in range(nt):
+                        f.seek(f.tell() + 240)  # skip trace header
+                        raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
+
+                        values = ibm.unpack_ibm32_series(endian, bytearray(raw_trace))
+                        self.matrix[i] = values
+
             else:
                 format_string = endian + fl * tl
-                for i in range(nt):
-                    f.seek(f.tell() + 240)  # skip trace header
-                    raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
 
-                    values = struct.unpack(format_string, raw_trace)
-                    self.matrix[i] = values
+                if progress:
+                    with tqdm(total=nt, **progress_bar_params) as pbar:
+                        for i in range(nt):
+                            f.seek(f.tell() + 240)  # skip trace header
+                            raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
+
+                            values = struct.unpack(format_string, raw_trace)
+                            self.matrix[i] = values
+                            pbar.update(1)
+                else:
+                    for i in range(nt):
+                        f.seek(f.tell() + 240)  # skip trace header
+                        raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
+
+                        values = struct.unpack(format_string, raw_trace)
+                        self.matrix[i] = values
 
     def replace_in_file(self, file):
         """ Replaces the traces in the file with self.

@@ -202,3 +202,8 @@ data_type_map2 = {np.float32: 5,
                   np.int64: 9,
                   np.uint32: 10,
                   np.uint16: 11}
+
+progress_bar_params = {
+    'desc': 'Unpacking traces: ',
+    'unit': ' tr',
+}
