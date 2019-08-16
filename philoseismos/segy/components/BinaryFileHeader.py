@@ -24,7 +24,7 @@ class BinaryFileHeader:
 
      """
 
-    def __init__(self):
+    def __init__(self, file=None):
         """ Create an empty Binary File Header object. """
 
         self._bytes = None
@@ -32,6 +32,9 @@ class BinaryFileHeader:
 
         self.table = pd.Series(index=BFH_columns, dtype=np.int64)
         self.table.fillna(0, inplace=True)
+
+        if file:
+            self.load_from_file(file)
 
     # ----- Loading, writing ----- #
 
