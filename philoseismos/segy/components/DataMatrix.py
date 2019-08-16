@@ -9,7 +9,7 @@ e-mail: dubrovin.io@icloud.com """
 from philoseismos.segy import gfunc
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
 from philoseismos.segy.tools import ibm
-from philoseismos.segy.tools.constants import data_type_map1, progress_bar_params
+from philoseismos.segy.tools.constants import data_type_map1, unpack_pbar_params
 
 import numpy as np
 import struct
@@ -67,7 +67,7 @@ class DataMatrix:
 
             if not fl:  # for IBM values format letter is None
                 if progress:
-                    with tqdm(total=nt, **progress_bar_params) as pbar:
+                    with tqdm(total=nt, **unpack_pbar_params) as pbar:
                         for i in range(nt):
                             f.seek(f.tell() + 240)  # skip trace header
                             raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)
@@ -87,7 +87,7 @@ class DataMatrix:
                 format_string = endian + fl * tl
 
                 if progress:
-                    with tqdm(total=nt, **progress_bar_params) as pbar:
+                    with tqdm(total=nt, **unpack_pbar_params) as pbar:
                         for i in range(nt):
                             f.seek(f.tell() + 240)  # skip trace header
                             raw_trace = f.read(ss * tl)  # the size of the trace is (trace length) * (sample size)

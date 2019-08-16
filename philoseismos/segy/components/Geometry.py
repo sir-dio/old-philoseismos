@@ -43,7 +43,7 @@ class Geometry:
         # endian, trace length, sample size, number of traces
         endian, tl, ss, nt = self._get_parameters_from_file(file)
 
-        _table = np.empty(shape=(nt, len(TH_columns)))
+        _table = np.empty(shape=(nt, len(TH_columns)), dtype=np.int32)
 
         with open(file, 'br') as f:
             f.seek(3600)  # skip Textual and Binary file headers

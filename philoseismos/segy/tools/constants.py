@@ -203,7 +203,12 @@ data_type_map2 = {np.float32: 5,
                   np.uint32: 10,
                   np.uint16: 11}
 
-progress_bar_params = {
+unpack_pbar_params = {
     'desc': 'Unpacking traces: ',
+    'unit': ' tr',
+}
+
+pack_pbar_params = {
+    'desc': 'Packing traces: ',
     'unit': ' tr',
 }

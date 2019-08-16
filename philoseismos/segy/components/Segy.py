@@ -10,11 +10,12 @@ from philoseismos.segy.components import TextualFileHeader, BinaryFileHeader
 from philoseismos.segy.components import DataMatrix, Geometry
 from philoseismos.segy.tools.constants import sample_format_codes as sfc
 from philoseismos.segy.tools import ibm
-from philoseismos.segy.tools.constants import TH_format_string, TH_columns
+from philoseismos.segy.tools.constants import TH_format_string, TH_columns, pack_pbar_params
 
 import struct
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 
 class Segy:
@@ -51,7 +52,7 @@ class Segy:
         self.DM.load_from_file(file, progress=progress)
         self.G.load_from_file(file)
 
-    def save_file(self, file, endian='>'):
+    def save_file(self, file, endian='>', progress=False):
         """ Saves self into a specified .sgy file. """
 
         ss, fl, _ = sfc[self.BFH['Sample Format']]
@@ -65,22 +66,44 @@ class Segy:
             f.write(self.BFH._bytes)
 
             if not fl:  # IBM
-                for i in range(nt):
-                    raw_header = bytearray(240)
-                    raw_header[:232] = struct.pack(endian + TH_format_string, *self.G.table.loc[i, :].values)
-                    f.write(raw_header)
+                if progress:
+                    with tqdm(total=nt, **pack_pbar_params) as pbar:
+                        for i in range(nt):
+                            raw_header = bytearray(240)
+                            raw_header[:232] = struct.pack(endian + TH_format_string, *self.G.table.loc[i, :].values)
+                            f.write(raw_header)
 
-                    raw_trace = ibm.pack_ibm32_series(endian, self.DM.matrix[i])
-                    f.write(raw_trace)
+                            raw_trace = ibm.pack_ibm32_series(endian, self.DM.matrix[i])
+                            f.write(raw_trace)
+                            pbar.update(1)
+                else:
+                    for i in range(nt):
+                        raw_header = bytearray(240)
+                        raw_header[:232] = struct.pack(endian + TH_format_string, *self.G.table.loc[i, :].values)
+                        f.write(raw_header)
+
+                        raw_trace = ibm.pack_ibm32_series(endian, self.DM.matrix[i])
+                        f.write(raw_trace)
             else:
                 format_string = endian + fl * tl
-                for i in range(nt):
-                    raw_header = bytearray(240)
-                    raw_header[:232] = struct.pack(endian + TH_format_string, *self.G.table.loc[i, :].values)
-                    f.write(raw_header)
+                if progress:
+                    with tqdm(total=nt) as pbar:
+                        for i in range(nt):
+                            raw_header = bytearray(240)
+                            raw_header[:232] = struct.pack(endian + TH_format_string, *self.G.table.loc[i, :].values)
+                            f.write(raw_header)
 
-                    raw_trace = struct.pack(format_string, *self.DM.matrix[i])
-                    f.write(raw_trace)
+                            raw_trace = struct.pack(format_string, *self.DM.matrix[i])
+                            f.write(raw_trace)
+                            pbar.update(1)
+                else:
+                    for i in range(nt):
+                        raw_header = bytearray(240)
+                        raw_header[:232] = struct.pack(endian + TH_format_string, *self.G.table.loc[i, :].values)
+                        f.write(raw_header)
+
+                        raw_trace = struct.pack(format_string, *self.DM.matrix[i])
+                        f.write(raw_trace)
 
         self.G._apply_coordinate_scalar_after_unpacking()
 
