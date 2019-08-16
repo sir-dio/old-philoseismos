@@ -19,7 +19,7 @@ import numpy as np
 class Geometry:
     """ This object represents geometry: a collection of all the Trace Headers. """
 
-    def __init__(self):
+    def __init__(self, file=None):
         """ """
 
         self.table = None
@@ -27,31 +27,46 @@ class Geometry:
                         'SOU_X', 'REC_X', 'OFFSET',
                         'CDP_X']
 
+        if file:
+            self.load_from_file(file)
+
     # ----- Loading, writing ----- #
 
     def load_from_file(self, file):
-        """ Returns a Geometry object extracted from the file. """
+        """ Returns a Geometry object extracted from the file.
+
+        Args:
+            file: A path to the file.
+
+        """
 
         # endian, trace length, sample size, number of traces
         endian, tl, ss, nt = self._get_parameters_from_file(file)
 
-        self.table = pd.DataFrame(index=range(nt), columns=TH_columns)
+        _table = np.empty(shape=(nt, len(TH_columns)))
 
         with open(file, 'br') as f:
             f.seek(3600)  # skip Textual and Binary file headers
+
             for i in range(nt):
                 raw_header = f.read(240)
 
                 values = struct.unpack(endian + TH_format_string, raw_header[:232])
-                self.table.loc[i, :] = values
+                _table[i] = values
 
                 f.seek(f.tell() + ss * tl)
 
+        self.table = pd.DataFrame(_table, index=range(nt), columns=TH_columns)
         self.table.fillna(0, inplace=True)
         self._apply_coordinate_scalar_after_unpacking()
 
-    def replace_in_file(self, file):
-        """ Replaces the geometry in the file with self. """
+    def replace_in_file(self, file: str):
+        """ Replaces the geometry in the file with self.
+
+        Args:
+            file: A path to the file.
+
+        """
 
         endian, tl, ss, nt = self._get_parameters_from_file(file)
 
