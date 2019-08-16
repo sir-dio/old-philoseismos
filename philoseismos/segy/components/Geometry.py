@@ -83,7 +83,13 @@ class Geometry:
         # to restore the table to its true form, we remove the effect of applying scalars
         self._apply_coordinate_scalar_after_unpacking()
 
-        # ----- Dunder methods ----- #
+    # ----- Properties ----- #
+    @property
+    def filled(self):
+        """ Returns only filled columns of the Geometry spreadsheet. """
+        return self.table.loc[:, (self.table != 0).any()]
+
+    # ----- Dunder methods ----- #
 
     def __repr__(self):
         return str(self.table.loc[:, self.headers])
