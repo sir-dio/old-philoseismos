@@ -108,31 +108,77 @@ class Segy:
 
         self.G._apply_coordinate_scalar_after_unpacking()
 
+    # ----- Extracting parts ----- #
+
+    def extract_by_fixed_headers(self, fixed_headers):
+        """ Returns a new Segy object, whose data is a subset based on given fixed headers.
+
+         Args:
+             fixed_headers: Dictionary of format {header name 1: fixed value 1, ...}
+
+         """
+
+        extracted_g = self.G.table.copy()
+        for key, value in fixed_headers.items():
+            extracted_g = extracted_g.loc[extracted_g[key] == value]
+
+        extracted_dm = self.DM.matrix[extracted_g.index]
+
+        out = Segy.empty_like(self)
+
+        out.TFH = self.TFH
+        out.BFH = self.BFH
+        out.DM.matrix = extracted_dm
+        out.G.table = extracted_g.reset_index(drop=True)
+
+        out.BFH.table['Traces / Ensemble'] = extracted_dm.shape[0]
+
+        return out
+
     # ----- Factory Methods ----- #
 
     @classmethod
-    def empty_like(cls, file):
-        """ Returns an empty Segy with same parameters as the specified file. """
+    def empty_like(cls, segy):
+        """ Returns an empty Segy with same parameters as the specified file.
+
+        Args:
+            segy: Segy object or path to the file.
+
+        """
 
         out = cls()
 
-        nt = gfunc.get_number_of_traces(file)
-        si = gfunc.get_sample_interval(file)
-        ns = gfunc.get_trace_length(file)
-
         out.TFH.set_content('Created in philoseismos! With love to programming and seismology.')
 
-        out.BFH.table['Traces / Ensemble'] = nt
-        out.BFH.table['Sample Interval'] = si
-        out.BFH.table['Samples / Trace'] = ns
-        out.BFH.table['Sample Format'] = 5
+        if isinstance(segy, str):
+            nt = gfunc.get_number_of_traces(segy)
+            si = gfunc.get_sample_interval(segy)
+            ns = gfunc.get_trace_length(segy)
 
-        out.DM.matrix = np.zeros((nt, ns), dtype=np.float32)
+            out.BFH.table['Traces / Ensemble'] = nt
+            out.BFH.table['Sample Interval'] = si
+            out.BFH.table['Samples / Trace'] = ns
+            out.BFH.table['Sample Format'] = 5
 
-        out.G.table = pd.DataFrame(index=range(nt), columns=TH_columns)
-        out.G.table.loc[:, 'FFID'] = 1
-        out.G.table.loc[:, 'CHAN'] = range(1, nt + 1)
-        out.G.table.fillna(0, inplace=True)
+            out.DM.matrix = np.zeros((nt, ns), dtype=np.float32)
+
+            out.G.table = pd.DataFrame(index=range(nt), columns=TH_columns)
+            out.G.table.loc[:, 'FFID'] = 1
+            out.G.table.loc[:, 'CHAN'] = range(1, nt + 1)
+            out.G.table.fillna(0, inplace=True)
+        elif isinstance(segy, Segy):
+            shape = segy.DM.matrix.shape
+            out.DM.matrix = np.zeros(shape, dtype=np.float32)
+
+            out.BFH.table['Traces / Ensemble'] = shape[0]
+            out.BFH.table['Sample Format'] = 5
+
+            out.G.table = pd.DataFrame(index=range(shape[0]), columns=TH_columns)
+            out.G.table.loc[:, 'FFID'] = 1
+            out.G.table.loc[:, 'CHAN'] = range(1, shape[0] + 1)
+            out.G.table.fillna(0, inplace=True)
+        else:
+            raise ValueError('The `segy` parameter has to be either a Segy object or a string')
 
         return out
 
