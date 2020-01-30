@@ -21,6 +21,7 @@ VERSION = "0.1.0"
 REQUIRED = [
     "numpy",
     "pandas",
+    "h5py",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
