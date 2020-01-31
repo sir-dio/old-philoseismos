@@ -15,7 +15,7 @@ URL = 'https://github.com/sir-dio/philoseismos'
 EMAIL = 'dubrovin.io@icloud.com'
 AUTHOR = 'Ivan Dubrovin'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = "0.1.0"
+VERSION = "0.1.2"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -94,6 +94,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],
