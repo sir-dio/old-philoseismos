@@ -42,6 +42,11 @@ class Output:
             new.Hy = np.array(f['rxs/rx1/Hy'])
             new.Hz = np.array(f['rxs/rx1/Hz'])
 
+            new.rx_name = f['rxs/rx1'].attrs['Name']
+            new.rx_position = f['rxs/rx1'].attrs['Position']
+            new.src_position = f['srcs/src1'].attrs['Position']
+            new.src_type = f['srcs/src1'].attrs['Type']
+
         new.t = np.arange(new.iterations) * new.dt
 
         return new
