@@ -8,6 +8,7 @@ e-mail: dubrovin.io@icloud.com """
 import h5py
 import numpy as np
 import glob
+import os
 
 from philoseismos.gprMax.constants import output_attributes
 
@@ -53,7 +54,7 @@ class Output:
         return new
 
     @classmethod
-    def gather_Ascans(cls, basename):
+    def gather_Ascans(cls, basename, remove_files=True):
         """ Create a B-scan by loading all the A-scans with a given basename. """
 
         new = cls()
@@ -123,5 +124,9 @@ class Output:
                 new.Hz[i] = f['rxs/rx1/Hz']
 
         new.t = np.arange(new.iterations) * new.dt
+
+        if remove_files:
+            for file in files:
+                os.remove(file)
 
         return new
