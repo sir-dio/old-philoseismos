@@ -66,7 +66,7 @@ def basename_of_series_of_Ascans(tmpdir_factory):
 
         _write_example_output_into(file, rx_coord, src_coord)
 
-    return basename
+    return f'{tmpdir_factory.getbasetemp()}/{tempdir.basename}/{basename}'
 
 
 def test_Ascan_loads_correctly(sigle_Ascan):
@@ -94,7 +94,6 @@ def test_Ascan_loads_correctly(sigle_Ascan):
     assert out.src_type == 'HertzianDipole'
 
 
-@pytest.mark.skip(reason='WIP')
 def test_Bscan_gathers_correctly(basename_of_series_of_Ascans):
     """ Test that series of A-scans gathers into a B-scan correctly. """
 
@@ -111,10 +110,13 @@ def test_Bscan_gathers_correctly(basename_of_series_of_Ascans):
     assert out.Ex[0, 0] == 1
     assert out.Hy[0, 0] == 5
 
-    assert out.rx_names == [f'Rx({i * 20},50,0)' for i in range(1, 5)]
-    assert out.rx_positions == [np.array([i * 0.2, 0.5, 0]) for i in range(1, 5)]
-    assert out.src_positions == [np.array([i * 0.2, 0.5, 0]) for i in range(1, 5)]
-    assert out.types == ['HertzianDipole' for i in range(1, 5)]
+    for i in range(4):
+        assert out.rx_names[i] == f'Rx({(i + 1) * 20},50,0)'
+        assert np.alltrue(out.rx_positions[i] == np.array([(i + 1) * 0.2, 0.5, 0]))
+        assert np.alltrue(out.src_positions[i] == np.array([(i + 1) * 0.2, 0.5, 0]))
+        assert out.src_types[i] == 'HertzianDipole'
+
+    assert np.alltrue(out.t == np.arange(100) * 1e-12)
 
 
 def _write_example_output_into(file, rx_coord, src_coord):
