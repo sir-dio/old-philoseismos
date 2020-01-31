@@ -69,13 +69,13 @@ def output_file(tmpdir_factory):
 
 
 def test_Ascan_loads_correctly(output_file):
+    """ Test loading of single A-scan files. """
+
     out = Output.load_Ascan(output_file)
 
-    assert isinstance(out.data, dict)
-    assert isinstance(out.attrs, dict)
+    assert np.alltrue(out.Ex == output_file_data['Ex'])
+    assert np.alltrue(out.Hy == output_file_data['Hy'])
+    assert out.title == output_file_attrs['Title']
+    assert out.nsrc == output_file_attrs['nsrc']
 
-    assert out.data.keys() == output_file_data.keys()
-    assert np.alltrue(out.data['Ex'] == output_file_data['Ex'])
-    assert np.alltrue(out.data['Hz'] == output_file_data['Hz'])
-
-    assert out.attrs == output_file_attrs
+    assert np.alltrue(out.t == np.arange(100) * 1e-12)
