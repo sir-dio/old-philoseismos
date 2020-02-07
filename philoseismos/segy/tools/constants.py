@@ -86,29 +86,32 @@ TH_format_string = 'iiiiiiihhhhiiiiiiiihhiiiihhhhhhhhhhhhhhhhhhhhhhhhhh'
 TH_format_string += 'hhhhhhhhhhhhhhhhhhhhiiiiihhihhhhhhhhihh'
 # then 8 bytes of text (ASCII or EBCDIC)
 
+# TODO: A helper function explaining the headers.
+# TODO A helper function explaining the BFH fields.
+
 # a list that contains names of trace headers that are used
 # to create a geometry DataFrame in the Data object
-TH_columns = ['TRACENO',  # unique number of a trace
+TH_columns = ['TRACENO',  # ordinal number of a trace
               'Trace No. (file)',
-              'FFID',  # unique number of the shot
+              'FFID',  # unique number of a shot
               'CHAN',  # channel number
-              'Energy Source No.',
-              'CDP',
-              'Trace No. (ensemble)',
-              'Trace ID',
-              '# Vertically Summed Traces',
-              '# Horizontally Stacked Traces',
+              'SOURCE',  # number of a source point
+              'CDP',  # number of a common depth point
+              'SEQNO',  # ordinal number of a trace in the ensemble
+              'TRC_TYPE',  # ID code for a trace
+              'STACKCNT',  # number of vertically stacked traces
+              'TRFOLD',  # number of horizontally stacked traces
               'Data Use',
-              'OFFSET',
-              'Receiver Elevation',
-              'Source Elevation',
-              'Source Depth',
-              'Receiver Datum Elevation',
-              'Source Datum Elevation',
-              'Water Column Height at Source',
-              'Water Column Height at Receiver',
-              'ELEVSC',
-              'COORDSC',
+              'OFFSET',  # offset - distance between the source and the receiver
+              'REC_ELEV',  # receiver elevation
+              'SOU_ELEV',  # source elevation
+              'DEPTH',  # source depth from the surface
+              'REC_DATUM',  # elevation of the datum at the receiver
+              'SOU_DATUM',  # elevation of the datum at the source
+              'SOU_H2OD',  # water depth at the source
+              'REC_H2OD',  # water depth at the receiver
+              'ELEVSC',  # scalar to apply to the elevations
+              'COORDSC',  # scalar to apply to the coordinates
               'SOU_X',
               'SOU_Y',
               'REC_X',
@@ -116,37 +119,37 @@ TH_columns = ['TRACENO',  # unique number of a trace
               'Coordinate Units',
               'Weathering Velocity',
               'Subweathering Velocity',
-              'Uphole Time at Source',
-              'Uphole Time at Receiver',
-              'Source Static Correction',
-              'Receiver Static Correction',
-              'Total Static',
+              'UPHOLE',  # vertical time at the source, ms
+              'REC_UPHOLE',  # vertical time at the receiver, ms
+              'SOU_STAT',  # a static correction at the source, ms
+              'REC_STAT',  # a static correction at the receiver, ms
+              'TOT_STAT',  # total static correction, ms
               'Lag Time A',
               'Lag Time B',
               'Delay Recording Time',
-              'Mute Time (start)',
-              'Mute Time (end)',
-              '# Samples',
-              'Sample Interval',
-              'Gain Type',
-              'Instrument Gain Constant',
-              'Instrument Initial Gain',
-              'Correlated Flag',
-              'Sweep Freq. (start)',
-              'Sweep Freq. (end)',
-              'Sweep Length',
-              'Sweep Type',
+              'TLIVE_S',  # starting time of muting, ms
+              'TFULL_S',  # ending time of muting, ms
+              'NUMSMP',  # number of samples in a trace (RadExPro needs this!)
+              'DT',  # sample interval in microseconds (RadExPro needs this!)
+              'IGAIN',  # code of the gain type of the instrument
+              'PREAMP',  # amplification coeefitient for instrument, dB
+              'EARLYG',  # initial amplification of the instrument, dB
+              'COR_FLAG',  # correlation flag (1 - no, 2 - yes)
+              'SWEEPFREQSTART',  # starting frequency of the sweep, Hz
+              'SWEEPFREQEND',  # ending frequency of the sweep, Hz
+              'SWEEPLEN',  # length of the sweep, ms
+              'SWEEPTYPE',  # code for the sweep type
               'Sweep Taper (start)',
               'Sweep Taper (end)',
               'Taper Type',
-              'Alias Filter Freq.',
-              'Alias Filter Slope',
-              'Notch Filter Freq.',
-              'Notch Filter Slope',
-              'Low-cut Freq.',
-              'High-cut Freq.',
-              'Low-cut Slope',
-              'High-cut Slope',
+              'AAXFILT',  # frequency of the anti-aliasing filter, Hz
+              'AAXSLOP',  # slope of the anti-aliasing filter, dB / oct
+              'FREQXN',  # frequency of the reject filter, Hz
+              'FXNSLOP',  # slope of the reject filter, dB / oct
+              'FREQXL',  # low-cut frequency, Hz
+              'FREQXH',  # high-cut frequency, Hz
+              'FXLSLOP',  # low-cut slope, dB / oct
+              'FXHSLOP',  # high-cut slope, dB / oct
               'YEAR',
               'DAY',
               'HOUR',
