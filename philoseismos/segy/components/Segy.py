@@ -146,6 +146,8 @@ class Segy:
 
         """
 
+        # TODO: add a test case for this.
+
         out = cls()
 
         out.TFH.set_content('Created in philoseismos! With love to programming and seismology.')
@@ -191,6 +193,8 @@ class Segy:
     @classmethod
     def empty(cls, shape=(24, 1024), sample_interval=500):
         """ Returns an empty Segy with the given Data Matrix shape. """
+
+        # TODO: add a test case for this.
 
         out = cls()
 
