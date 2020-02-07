@@ -10,14 +10,26 @@ import numpy as np
 import glob
 import os
 
-from philoseismos.gprMax.constants import output_attributes
+from philoseismos import Segy
 
 
 class Output:
     """ This object represents a gprMax output file. """
 
     def __init__(self):
-        pass
+
+        self.title = None
+        self.iterations = None
+        self.title = None
+        self.dt = None
+        self.dx_dy_dz = None
+        self.gprMax = None
+        self.nrx = None
+        self.nsrc = None
+        self.nx_ny_nz = None
+        self.rxsteps = None
+        self.srcsteps = None
+        self.shape = None
 
     @classmethod
     def load_Ascan(cls, file):
@@ -50,6 +62,7 @@ class Output:
             new.src_type = f['srcs/src1'].attrs['Type']
 
         new.t = np.arange(new.iterations) * new.dt
+        new.shape = (1, new.iterations)
 
         return new
 
@@ -89,13 +102,15 @@ class Output:
             new.src_positions.append(position)
             new.src_types.append(type)
 
+            new.shape = (new.traces, new.iterations)
+
             # create the arrays to store the data
-            new.Ex = np.empty(shape=(new.traces, new.iterations), dtype=np.float32)
-            new.Ey = np.empty(shape=(new.traces, new.iterations), dtype=np.float32)
-            new.Ez = np.empty(shape=(new.traces, new.iterations), dtype=np.float32)
-            new.Hx = np.empty(shape=(new.traces, new.iterations), dtype=np.float32)
-            new.Hy = np.empty(shape=(new.traces, new.iterations), dtype=np.float32)
-            new.Hz = np.empty(shape=(new.traces, new.iterations), dtype=np.float32)
+            new.Ex = np.empty(shape=new.shape, dtype=np.float32)
+            new.Ey = np.empty(shape=new.shape, dtype=np.float32)
+            new.Ez = np.empty(shape=new.shape, dtype=np.float32)
+            new.Hx = np.empty(shape=new.shape, dtype=np.float32)
+            new.Hy = np.empty(shape=new.shape, dtype=np.float32)
+            new.Hz = np.empty(shape=new.shape, dtype=np.float32)
 
             # save the first trace
             new.Ex[0] = f['rxs/rx1/Ex']
@@ -130,3 +145,31 @@ class Output:
                 os.remove(file)
 
         return new
+
+    def save_to_sgy(self, base_name, component='all'):
+        """ Saves the output to a Segy file. """
+
+        sample_interval = int(round(self.dt * 1e12))  # picoseconds
+        components = [self.Ex, self.Ey, self.Ez, self.Hx, self.Hy, self.Hz]
+        component_names = ['Ex', 'Ey', 'Ez', 'Hx', 'Hy', 'Hz']
+
+        # TODO: automatically determine the scalar.
+        # TODO: add elevation scalar to Segy
+
+        for j in range(6):
+            out = Segy.empty(shape=self.shape, sample_interval=sample_interval)
+            out.G.table.loc[:, 'COORDSC'] = -1000
+
+            for i, (src, rx) in enumerate(zip(self.src_positions, self.rx_positions)):
+                out.G.table.loc[i, 'SOU_X'] = src[0]
+                out.G.table.loc[i, 'SOU_Y'] = src[2]
+                # out.G.table.loc[i, 'Source Elevation'] = src[1]
+                out.G.table.loc[i, 'REC_X'] = rx[0]
+                out.G.table.loc[i, 'REC_Y'] = rx[2]
+                # out.G.table.loc[i, 'Receiver Elevation'] = rx[1]
+                out.G.table.loc[i, 'YEAR'] = j  # component id
+
+            out.DM.matrix[:, :] = components[j][:, :]
+
+            out.save_file(f'{base_name}_{component_names[j]}.sgy')
+
