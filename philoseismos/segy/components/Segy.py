@@ -155,27 +155,33 @@ class Segy:
             si = gfunc.get_sample_interval(segy)
             ns = gfunc.get_trace_length(segy)
 
-            out.BFH.table['Traces / Ensemble'] = nt
-            out.BFH.table['Sample Interval'] = si
-            out.BFH.table['Samples / Trace'] = ns
-            out.BFH.table['Sample Format'] = 5
+            out.BFH['Traces / Ensemble'] = nt
+            out.BFH['Sample Interval'] = si
+            out.BFH['Samples / Trace'] = ns
+            out.BFH['Sample Format'] = 5
 
             out.DM.matrix = np.zeros((nt, ns), dtype=np.float32)
 
             out.G.table = pd.DataFrame(index=range(nt), columns=TH_columns)
             out.G.table.loc[:, 'FFID'] = 1
             out.G.table.loc[:, 'CHAN'] = range(1, nt + 1)
+            out.G.table.loc[:, 'DT'] = si
+            out.G.table.loc[:, 'NUMSMP'] = ns
             out.G.table.fillna(0, inplace=True)
         elif isinstance(segy, Segy):
             shape = segy.DM.matrix.shape
             out.DM.matrix = np.zeros(shape, dtype=np.float32)
 
-            out.BFH.table['Traces / Ensemble'] = shape[0]
-            out.BFH.table['Sample Format'] = 5
+            out.BFH['Traces / Ensemble'] = shape[0]
+            out.BFH['Sample Interval'] = segy.BFH['Sample Interval']
+            out.BFH['Samples / Trace'] = segy.BFH['Samples / Trace']
+            out.BFH['Sample Format'] = 5
 
             out.G.table = pd.DataFrame(index=range(shape[0]), columns=TH_columns)
             out.G.table.loc[:, 'FFID'] = 1
             out.G.table.loc[:, 'CHAN'] = range(1, shape[0] + 1)
+            out.G.table.loc[:, 'DT'] = segy.BFH['Sample Interval']
+            out.G.table.loc[:, 'NUMSMP'] = segy.BFH['Samples / Trace']
             out.G.table.fillna(0, inplace=True)
         else:
             raise ValueError('The `segy` parameter has to be either a Segy object or a string')
@@ -200,6 +206,8 @@ class Segy:
         out.G.table = pd.DataFrame(index=range(shape[0]), columns=TH_columns)
         out.G.table.loc[:, 'FFID'] = 1
         out.G.table.loc[:, 'CHAN'] = range(1, shape[0] + 1)
+        out.G.table.loc[:, 'DT'] = sample_interval
+        out.G.table.loc[:, 'NUMSMP'] = shape[1]
         out.G.table.fillna(0, inplace=True)
 
         return out
