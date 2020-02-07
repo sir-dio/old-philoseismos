@@ -92,6 +92,8 @@ class Segy:
 
         Basically it reads the file into self and multiplies the Data Matrix by 0."""
 
+        # TODO: add a test case for this.
+
         out = cls(file)
         out.file = None
 
@@ -108,6 +110,8 @@ class Segy:
     @classmethod
     def empty(cls, shape=(24, 1024), sample_interval=500):
         """ Returns an empty Segy with the given Data Matrix shape. """
+
+        # TODO: add a test case for this.
 
         out = cls()
 
