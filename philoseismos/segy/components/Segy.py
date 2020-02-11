@@ -110,6 +110,8 @@ class Segy:
 
     # ----- Extracting parts ----- #
 
+    # TODO: empty and empty_like should fill the TRACENO header
+
     def extract_by_fixed_headers(self, fixed_headers):
         """ Returns a new Segy object, whose data is a subset based on given fixed headers.
 

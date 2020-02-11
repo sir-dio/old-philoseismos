@@ -30,6 +30,7 @@ def test_bfh_loads_correctly(temporary_segy):
     assert bfh['Sample Format'] == 5
     assert bfh['Traces / Ensemble'] == 48
     assert bfh['Job ID'] == 666
+    assert bfh['Line #'] == 69
 
 
 def test_data_matrix_loads_correctly(temporary_segy):
@@ -47,5 +48,18 @@ def test_geometry_loads_correctly(temporary_segy):
     g = Geometry()
     g.load_from_file(temporary_segy)
 
-    assert g.table.loc[0, 'FFID'] == 1
-    assert g.table.loc[12, 'SOU_X'] == 57
+    assert g.table.loc[0, 'FFID'] == 1984
+    assert g.table.loc[11, 'FFID'] == 1984
+    assert g.table.loc[47, 'FFID'] == 1984
+    assert g.table.loc[0, 'CHAN'] == 1
+    assert g.table.loc[11, 'CHAN'] == 12
+    assert g.table.loc[47, 'CHAN'] == 48
+    assert g.table.loc[0, 'COORDSC'] == -1000
+    assert g.table.loc[11, 'COORDSC'] == -1000
+    assert g.table.loc[47, 'COORDSC'] == -1000
+    assert g.table.loc[0, 'SOU_X'] == 50
+    assert g.table.loc[11, 'SOU_X'] == 61
+    assert g.table.loc[47, 'SOU_X'] == 97
+    assert g.table.loc[0, 'REC_X'] == 100
+    assert g.table.loc[11, 'REC_X'] == 111
+    assert g.table.loc[47, 'REC_X'] == 147
