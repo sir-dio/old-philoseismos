@@ -21,17 +21,18 @@ def test_layer_creation():
         h=10
     )
 
+    # when created, layers save the parameters
     assert l.alpha == 200
     assert l.beta == 100
     assert l.rho == 1500
     assert l.h == 10
 
 
-@pytest.mark.parametrize("beta", [100, 200, 300])
+@pytest.mark.parametrize("beta", [100, 150, 200])
 @pytest.mark.parametrize("rho", [500, 1000, 1500])
 @pytest.mark.parametrize("h", [5, 10, 15])
 @pytest.mark.parametrize("w", [40, 50, 60])
-@pytest.mark.parametrize("c", [50, 105, 150])
+@pytest.mark.parametrize("c", [50, 100, 150, 200])
 def test_layer_matrix_for_love_waves(beta, rho, h, w, c):
     """ Test the method for returning the layer matrix for Love Waves. """
 
@@ -42,13 +43,19 @@ def test_layer_matrix_for_love_waves(beta, rho, h, w, c):
         h=h
     )
 
+    # formulas from Oldrich Novotny -- Seismic Surface Waves
     k = w / c
     mu = rho * beta ** 2
     s = np.lib.scimath.sqrt((w / beta) ** 2 - k ** 2)
     Q = h * s
 
     a11 = np.cos(Q)
-    a12 = np.sin(Q) / mu / s
+
+    if c == beta:
+        a12 = 0
+    else:
+        a12 = np.sin(Q) / mu / s
+
     a21 = - mu * s * np.sin(Q)
     a22 = np.cos(Q)
 

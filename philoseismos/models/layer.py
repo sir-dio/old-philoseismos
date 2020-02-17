@@ -21,6 +21,9 @@ class Layer:
     def layer_matrix_love(self, omega, c):
         """ Return a layer matrix for Love Waves for a given phase velocity and frequency. """
 
+        if c == self.beta:
+            return np.identity(2)
+
         k = omega / c
         mu = self.beta ** 2 * self.rho
 
