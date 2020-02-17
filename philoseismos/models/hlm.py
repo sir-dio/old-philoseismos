@@ -42,6 +42,23 @@ class HorizontallyLayeredModel:
         self.fs = fs
         self.omegas = fs * 2 * np.pi
 
+    def calculate_love_dispersion_curves(self, n: int):
+        """ Calculate n first modal dispersion curves.
+
+        Start with the fundamental mode, end with (n-1)th higher mode.
+
+        """
+
+        if self.omegas is None:
+            raise ValueError('First assign the frequency axis!')
+
+        if n <= 0:
+            return
+
+        self._calculate_love_fundamental_mode()
+        for i in range(n - 1):
+            self._calculate_love_next_higher_mode()
+
     @property
     def layers(self):
         return tuple(self._layers)

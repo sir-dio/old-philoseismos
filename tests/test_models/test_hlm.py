@@ -15,6 +15,7 @@ from philoseismos.models.layer import Layer
 @pytest.fixture()
 def hlm():
     """ A HLM for tests. """
+
     model = HorizontallyLayeredModel(
         alpha=1000,
         beta=500,
@@ -116,3 +117,12 @@ def test_frequency_axis_assigning(hlm):
     # when its assigned, both fs and omegas are changed
     assert np.alltrue(hlm.fs == fs)
     assert np.alltrue(hlm.omegas == fs * 2 * np.pi)
+
+
+@pytest.mark.skip(reason="WIP")
+def test_dispersion_curve_calculation(hlm):
+    """ Test the method for calculating dispersion curves. """
+
+    # TODO: come up with a way to test this
+
+    pass
