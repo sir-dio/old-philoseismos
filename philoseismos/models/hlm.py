@@ -24,6 +24,9 @@ class HorizontallyLayeredModel:
         self.beta = beta
         self.rho = rho
 
+        self.fs = None
+        self.omegas = None
+
         self._layers = []
         self._love_dispersion_curves = []
 
@@ -32,6 +35,12 @@ class HorizontallyLayeredModel:
 
         layer = Layer(alpha=alpha, beta=beta, rho=rho, h=h)
         self._layers.append(layer)
+
+    def set_frequency_axis(self, fs):
+        """ Set the frequency axis for dispersion curves. """
+
+        self.fs = fs
+        self.omegas = fs * 2 * np.pi
 
     @property
     def layers(self):
@@ -65,20 +74,26 @@ class HorizontallyLayeredModel:
 
         return -A[1, 0] - mu * s * A[0, 0]
 
-    def _calculate_love_fundamental_mode(self, w):
+    def _calculate_love_fundamental_mode(self):
         """ Calculates the fundamental mode dispersion curve for Love Wave. """
 
+        # a list with the values of the phase velocity that satisfy the
+        # dispersion equation
         roots = []
 
-        for w_i in w:
+        # for each given value of circular frequency, find the value of
+        # phase velocity that satisfies the dispersion equation
+        for w in self.omegas:
             # start with a value slightly above the minimum velocity in the model
             guess = self.min_beta + 0.1
 
             # modify the dispersion equation, so that w is fixed and it only depends on c
-            dispersion_equation = lambda c: self._love_dispersion_equation(w=w_i, c=c)
+            def dispersion_equation(c):
+                """ Return the left hand side of the dispersion equation for Love waves. """
+                return self._love_dispersion_equation(w, c)
 
             # for values below fundamental mode, dispersion equation is less than 0
-            assert dispersion_equation(guess) < 0
+            assert dispersion_equation(guess) <= 0
 
             # c has to be less than beta, so only try these values
             while guess < self.beta:
@@ -92,7 +107,7 @@ class HorizontallyLayeredModel:
                 # otherwise just increase the guess and try again
                 else:
                     guess += 1
-            # if we did not find the root in the interval, then it does not exist (?)
+            # if we did not find the root in the interval, move on to the next frequency
             else:
                 roots.append(np.nan)
 

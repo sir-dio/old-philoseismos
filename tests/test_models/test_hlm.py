@@ -6,6 +6,7 @@ This files contains tests for Horizontally Layered Model object.
 e-mail: dubrovin.io@icloud.com """
 
 import pytest
+import numpy as np
 
 from philoseismos.models import HorizontallyLayeredModel
 from philoseismos.models.layer import Layer
@@ -99,3 +100,19 @@ def test_min_beta(hlm):
 
     hlm.add_layer(alpha=10, beta=3, rho=20, h=3)
     assert hlm.min_beta == 3
+
+
+def test_frequency_axis_assigning(hlm):
+    """ Test functionality of assigning a frequency axis for dispersion curves. """
+
+    # raw model does not have a frequency axis
+    assert hlm.fs is None
+    assert hlm.omegas is None
+
+    # the frequency is assigned via the special method
+    fs = np.arange(1, 10, 2)
+    hlm.set_frequency_axis(fs)
+
+    # when its assigned, both fs and omegas are changed
+    assert np.alltrue(hlm.fs == fs)
+    assert np.alltrue(hlm.omegas == fs * 2 * np.pi)
