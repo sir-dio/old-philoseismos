@@ -113,6 +113,47 @@ class HorizontallyLayeredModel:
 
         self._love_dispersion_curves.append(roots)
 
+    def _calculate_love_next_higher_mode(self):
+        """ Calculate the next higher mode available. """
+
+        if len(self._love_dispersion_curves) < 1:
+            raise ValueError('Before calculating the higher modes, calculate the fundamental one.')
+
+        # the algorithm is the same as for the fundamental mode,
+        # except the guess is always slightly bigger than the phase
+        # velocity of the previous mode
+
+        roots = []
+
+        # iterate over omegas AND the phase velocities of the previous mode
+        for w, c_prev in zip(self.omegas, self._love_dispersion_curves[-1]):
+
+            # if c_prev is NaN, go to the next iteration
+            if np.isnan(c_prev):
+                roots.append(np.nan)
+                continue
+
+            guess = c_prev + 0.1
+
+            def dispersion_equation(c):
+                """ Return the left hand side of the dispersion equation for Love waves. """
+                return self._love_dispersion_equation(w, c)
+
+            # get the sign of the dispersion equation
+            sign = np.sign(dispersion_equation(guess))
+
+            while guess < self.beta:
+                if np.sign(dispersion_equation(guess)) != sign:
+                    root = optimize.bisect(dispersion_equation, guess - 1, guess)
+                    roots.append(root)
+                    break
+                else:
+                    guess += 1
+            else:
+                roots.append(np.nan)
+
+        self._love_dispersion_curves.append(roots)
+
     def __str__(self):
         string = ''
 
