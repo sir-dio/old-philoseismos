@@ -31,7 +31,7 @@ def test_layer_creation():
 @pytest.mark.parametrize("beta", [100, 150, 200])
 @pytest.mark.parametrize("rho", [500, 1000, 1500])
 @pytest.mark.parametrize("h", [5, 10, 15])
-@pytest.mark.parametrize("w", [40, 50, 60])
+@pytest.mark.parametrize("w", [1, 40, 50, 60])
 @pytest.mark.parametrize("c", [50, 100, 150, 200])
 def test_layer_matrix_for_love_waves(beta, rho, h, w, c):
     """ Test the method for returning the layer matrix for Love Waves. """

@@ -84,3 +84,18 @@ def test_printing_hlm(hlm):
     expected += "Layer #1: alpha=1 beta=2 rho=3 h=4\n"
     expected += "Half-space: alpha=1000 beta=500 rho=1300"
     assert string == expected
+
+
+def test_min_beta(hlm):
+    """ Test that min_beta property returns minimal beta of all layers. """
+
+    assert hlm.min_beta == 500
+
+    hlm.add_layer(alpha=10, beta=5, rho=20, h=3)
+    assert hlm.min_beta == 5
+
+    hlm.add_layer(alpha=10, beta=8, rho=20, h=3)
+    assert hlm.min_beta == 5
+
+    hlm.add_layer(alpha=10, beta=3, rho=20, h=3)
+    assert hlm.min_beta == 3

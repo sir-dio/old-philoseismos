@@ -35,6 +35,11 @@ class Layer:
         a21 = -mu * s * np.sin(Q)
         a22 = a11
 
+        assert np.isreal(a11)
+        assert np.isreal(a12)
+        assert np.isreal(a21)
+        assert np.isreal(a22)
+
         A = np.array([
             [a11, a12],
             [a21, a22]
