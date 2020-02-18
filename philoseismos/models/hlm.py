@@ -69,6 +69,10 @@ class HorizontallyLayeredModel:
         betas.append(self.beta)
         return min(betas)
 
+    @property
+    def love_dispersion_curves(self):
+        return tuple(self._love_dispersion_curves)
+
     def _matrix_for_stack_of_layers_for_love(self, w, c):
         """ Calculate the matrix for stack of layers. """
 
@@ -82,7 +86,7 @@ class HorizontallyLayeredModel:
     def _love_dispersion_equation(self, w, c):
         """ The dispersion equation for Love Waves for value for given frequency and phase velocity. """
 
-        assert c < self.beta
+        assert c < self.beta, f'beta: {self.beta}, c: {c}'
 
         mu = self.beta ** 2 * self.rho
         k = w / c
@@ -102,7 +106,9 @@ class HorizontallyLayeredModel:
         # phase velocity that satisfies the dispersion equation
         for w in self.omegas:
             # start with a value slightly above the minimum velocity in the model
-            guess = self.min_beta + 0.1
+            # NB! for high frequencies, this step can cause initial guesses to fall
+            # above fundamental mode. the function will raise AssertionError in this case.
+            guess = self.min_beta + 0.001
 
             # modify the dispersion equation, so that w is fixed and it only depends on c
             def dispersion_equation(c):
@@ -110,7 +116,7 @@ class HorizontallyLayeredModel:
                 return self._love_dispersion_equation(w, c)
 
             # for values below fundamental mode, dispersion equation is less than 0
-            assert dispersion_equation(guess) <= 0
+            assert dispersion_equation(guess) <= 0, f'The guess falls above the fundamental mode!'
 
             # c has to be less than beta, so only try these values
             while guess < self.beta:
@@ -145,12 +151,13 @@ class HorizontallyLayeredModel:
         # iterate over omegas AND the phase velocities of the previous mode
         for w, c_prev in zip(self.omegas, self._love_dispersion_curves[-1]):
 
-            # if c_prev is NaN, go to the next iteration
-            if np.isnan(c_prev):
+            # if c_prev is NaN or next guess will be greater than max beta,
+            # go to the next iteration
+            if np.isnan(c_prev) or c_prev + 0.1 > self.beta:
                 roots.append(np.nan)
                 continue
 
-            guess = c_prev + 0.1
+            guess = c_prev + 0.001
 
             def dispersion_equation(c):
                 """ Return the left hand side of the dispersion equation for Love waves. """
