@@ -29,7 +29,10 @@ class HorizontallyLayeredModel:
         self.fs = None
         self.omegas = None
 
+        # container for all the Layer objects
         self._layers = []
+
+        # containers for modal dispersion curves for Love and Rayleigh waves
         self._love_dispersion_curves = []
         self._rayleigh_dispersion_curves = []
 
@@ -76,6 +79,37 @@ class HorizontallyLayeredModel:
         self._calculate_rayleigh_fundamental_mode()
         for i in range(n - 1):
             self._calculate_rayleigh_next_higher_mode()
+
+    def parameter_profiles(self, half_space_h=5):
+        """ Return the depths and corresponding parameters of the layers to plot.
+
+        Args:
+            half_space_h: How deep should the layer representing the half-space be in m.
+
+        Returns:
+            depths, alphas, betas, rhos: Lists of parameters.
+
+        """
+
+        current_depth = 0
+        depths, alphas, betas, rhos = [], [], [], []
+
+        # for all the layers top to bottom
+        for layer in reversed(self._layers):
+            depths += [current_depth, current_depth + layer.h]
+            alphas += [layer.alpha] * 2
+            betas += [layer.beta] * 2
+            rhos += [layer.rho] * 2
+
+            current_depth += layer.h
+
+        # for the half-space
+        depths += [current_depth, current_depth + half_space_h]
+        alphas += [self.alpha] * 2
+        betas += [self.beta] * 2
+        rhos += [self.rho] * 2
+
+        return depths, alphas, betas, rhos
 
     @property
     def layers(self):
