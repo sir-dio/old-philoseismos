@@ -11,7 +11,18 @@ import numpy as np
 class Layer:
 
     def __init__(self, alpha, beta, rho, h):
-        """ TODO: decribe """
+        """ Create a new Layer object.
+
+         This object is not intended to be used directly (at least for now), however such possibility exists.
+         Layers are managed by a Horizontally Layered Model objects.
+
+        Args:
+            alpha (float): P-wave velocity in m/s.
+            beta (float): S-wave velocity in m/s.
+            rho (float): Density in kg / m^3.
+            h (float): Layer thickness in m.
+
+         """
 
         self.alpha = alpha
         self.beta = beta
@@ -19,7 +30,15 @@ class Layer:
         self.h = h
 
     def layer_matrix_love(self, omega, c):
-        """ Return a layer matrix for Love Waves for a given phase velocity and frequency. """
+        """ Return a layer matrix for Love Waves for a given phase velocity and frequency.
+
+        This matrix is needed for computation of dispersion curves for models.
+
+        Args:
+            omega (float): Circular frequency in rad / s.
+            c (float): Phase velocity in m / s.
+
+        """
 
         if c == self.beta:
             return np.identity(2)
@@ -43,4 +62,14 @@ class Layer:
         return A
 
     def layer_matrix_rayleigh(self, omega, c):
-        return
+        """ Return a layer matrix for Rayleigh Waves for a given phase velocity and frequency.
+
+        This matrix is needed for computation of dispersion curves for models.
+
+        Args:
+            omega (float): Circular frequency in rad / s.
+            c (float): Phase velocity in m / s.
+
+        """
+
+        pass
