@@ -88,6 +88,12 @@ class HorizontallyLayeredModel:
         return min(betas)
 
     @property
+    def max_beta(self):
+        betas = [layer.beta for layer in self._layers]
+        betas.append(self.beta)
+        return max(betas)
+
+    @property
     def love_dispersion_curves(self):
         return tuple(self._love_dispersion_curves)
 
@@ -245,7 +251,6 @@ class HorizontallyLayeredModel:
             # this guess should probably be based on the Poisson's coefficient
             # but for now I'll just make it 1 because fuck it
             guess = self.min_beta / 2
-            print(f'{guess}')
 
             def dispersion_function(c):
                 """ Return the left hand side of the dispersion equation for Rayleigh waves. """
@@ -254,7 +259,7 @@ class HorizontallyLayeredModel:
             sign = np.sign(dispersion_function(guess))
 
             # is this condition good? or check for the maximum value of beta?
-            while guess < self.beta:
+            while guess < self.max_beta:
                 if np.sign(dispersion_function(guess)) != sign:
                     root = optimize.bisect(dispersion_function, guess - 1, guess)
                     roots.append(root)
@@ -268,6 +273,39 @@ class HorizontallyLayeredModel:
 
     def _calculate_rayleigh_next_higher_mode(self):
         """ Calculate the next higher mode available for Rayleigh waves. """
+
+        if len(self._rayleigh_dispersion_curves) < 1:
+            raise ValueError('Before calculating the higher modes, calculate the fundamental one.')
+
+        roots = []
+
+        for w, c_prev in zip(self.omegas, self._rayleigh_dispersion_curves[-1]):
+
+            # if c_prev is NaN, go to the next iteration
+            if np.isnan(c_prev):
+                roots.append(np.nan)
+                continue
+
+            guess = c_prev + 0.001
+
+            def dispersion_function(c):
+                """ Return the left hand side of the dispersion equation for Love waves. """
+                return self._rayleigh_dispersion_function(w, c)
+
+            # get the sign of the dispersion equation
+            sign = np.sign(dispersion_function(guess))
+
+            while guess < self.max_beta:
+                if np.sign(dispersion_function(guess)) != sign:
+                    root = optimize.bisect(dispersion_function, guess - 1, guess)
+                    roots.append(root)
+                    break
+                else:
+                    guess += 1
+            else:
+                roots.append(np.nan)
+
+        self._rayleigh_dispersion_curves.append(roots)
 
     def __str__(self):
         string = ''
