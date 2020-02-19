@@ -172,6 +172,9 @@ class HorizontallyLayeredModel:
 
         A = self._matrix_for_stack_of_layers_for_rayleigh(w, c)
 
+        # normalize the matrix to avoid overflow issues (hopefully)
+        A = A / A.max() * 2
+
         r = np.lib.scimath.sqrt(1 - (c / self.alpha) ** 2)
         s = np.lib.scimath.sqrt(1 - (c / self.beta) ** 2)
 
