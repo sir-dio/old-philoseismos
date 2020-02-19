@@ -140,7 +140,7 @@ class HorizontallyLayeredModel:
 
         A = np.identity(2)
 
-        for layer in reversed(self._layers):
+        for layer in self._layers:
             A = np.matmul(A, layer.layer_matrix_love(w, c))
 
         return A
@@ -150,7 +150,7 @@ class HorizontallyLayeredModel:
 
         A = np.identity(4)
 
-        for layer in reversed(self._layers):
+        for layer in self._layers:
             A = np.matmul(A, layer.layer_matrix_rayleigh(w, c))
 
         return A
