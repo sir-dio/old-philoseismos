@@ -15,6 +15,11 @@ class HorizontallyLayeredModel:
 
         To add layers on top of the half-space, use add_layer() method.
 
+        Args:
+            alpha (float): P-wave velocity in m / s.
+            beta (float): S-wave velocity in m / s.
+            rho (float): Density in kg / m^3.
+
         """
 
         self.alpha = alpha
@@ -24,7 +29,19 @@ class HorizontallyLayeredModel:
         self._layers = []
 
     def add_layer(self, alpha, beta, rho, h):
-        """ Add a layer on top of the HLM. """
+        """ Add a layer on top of the HLM.
+
+        The layers are added on top! So the model is always created from bottom to top:
+        first the half-space is created (HLM object itself), then new layers are
+        added on top until the model is finished.
+
+        Args:
+            alpha (float): P-wave velocity in m / s.
+            beta (float): S-wave velocity in m / s.
+            rho (float): Density in kg / m^3.
+            h (float): Thickness in m.
+
+        """
 
         layer = Layer(alpha=alpha, beta=beta, rho=rho, h=h)
         self._layers.append(layer)
