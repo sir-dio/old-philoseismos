@@ -6,6 +6,7 @@ This files contains tests for Horizontally Layered Model object.
 e-mail: dubrovin.io@icloud.com """
 
 import pytest
+import numpy as np
 
 from philoseismos.models import HorizontallyLayeredModel
 from philoseismos.models.layer import Layer
@@ -14,6 +15,7 @@ from philoseismos.models.layer import Layer
 @pytest.fixture()
 def hlm():
     """ A HLM for tests. """
+
     model = HorizontallyLayeredModel(
         alpha=1000,
         beta=500,
@@ -71,16 +73,56 @@ def test_printing_hlm(hlm):
     assert string == expected
 
     # with a layer, it prints the layer first, then half-space
-    hlm.add_layer(alpha=1, beta=2, rho=3, h=4)
+    hlm.add_layer(alpha=2, beta=1, rho=3, h=4)
     string = hlm.__str__()
-    expected = "Layer #0: alpha=1 beta=2 rho=3 h=4\n"
+    expected = "Layer #0: alpha=2 beta=1 rho=3 h=4\n"
     expected += "Half-space: alpha=1000 beta=500 rho=1300"
     assert string == expected
 
     # with multiple layers, they are listed top to bottom
-    hlm.add_layer(alpha=5, beta=6, rho=7, h=8)
+    hlm.add_layer(alpha=6, beta=5, rho=7, h=8)
     string = hlm.__str__()
-    expected = "Layer #0: alpha=5 beta=6 rho=7 h=8\n"
-    expected += "Layer #1: alpha=1 beta=2 rho=3 h=4\n"
+    expected = "Layer #0: alpha=6 beta=5 rho=7 h=8\n"
+    expected += "Layer #1: alpha=2 beta=1 rho=3 h=4\n"
     expected += "Half-space: alpha=1000 beta=500 rho=1300"
     assert string == expected
+
+
+def test_min_beta(hlm):
+    """ Test that min_beta property returns minimal beta of all layers. """
+
+    assert hlm.min_beta == 500
+
+    hlm.add_layer(alpha=10, beta=5, rho=20, h=3)
+    assert hlm.min_beta == 5
+
+    hlm.add_layer(alpha=10, beta=8, rho=20, h=3)
+    assert hlm.min_beta == 5
+
+    hlm.add_layer(alpha=10, beta=3, rho=20, h=3)
+    assert hlm.min_beta == 3
+
+
+def test_frequency_axis_assigning(hlm):
+    """ Test functionality of assigning a frequency axis for dispersion curves. """
+
+    # raw model does not have a frequency axis
+    assert hlm.fs is None
+    assert hlm.omegas is None
+
+    # the frequency is assigned via the special method
+    fs = np.arange(1, 10, 2)
+    hlm.set_frequency_axis(fs)
+
+    # when its assigned, both fs and omegas are changed
+    assert np.alltrue(hlm.fs == fs)
+    assert np.alltrue(hlm.omegas == fs * 2 * np.pi)
+
+
+@pytest.mark.skip(reason="WIP")
+def test_dispersion_curve_calculation(hlm):
+    """ Test the method for calculating dispersion curves. """
+
+    # TODO: come up with a way to test this
+
+    pass

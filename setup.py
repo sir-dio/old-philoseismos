@@ -22,6 +22,7 @@ REQUIRED = [
     "numpy",
     "pandas",
     "h5py",
+    "scipy",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
