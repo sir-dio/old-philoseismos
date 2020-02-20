@@ -27,12 +27,16 @@ def test_layer_creation():
     assert l.rho == 1500
     assert l.h == 10
 
+    # doesn't allow beta > alpha
+    with pytest.raises(ValueError):
+        l = Layer(alpha=100, beta=200, rho=1000, h=5)
 
-@pytest.mark.parametrize("beta", [100, 150, 200])
-@pytest.mark.parametrize("rho", [500, 1000, 1500])
-@pytest.mark.parametrize("h", [5, 10, 15])
-@pytest.mark.parametrize("w", [1, 40, 50, 60])
-@pytest.mark.parametrize("c", [50, 100, 150, 200])
+
+@pytest.mark.parametrize("beta", [50, 150])
+@pytest.mark.parametrize("rho", [500, 1500])
+@pytest.mark.parametrize("h", [5, 15])
+@pytest.mark.parametrize("w", [1, 60])
+@pytest.mark.parametrize("c", [50, 200])
 def test_layer_matrix_for_love_waves(beta, rho, h, w, c):
     """ Test the method for returning the layer matrix for Love Waves. """
 

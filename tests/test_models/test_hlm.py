@@ -73,17 +73,17 @@ def test_printing_hlm(hlm):
     assert string == expected
 
     # with a layer, it prints the layer first, then half-space
-    hlm.add_layer(alpha=1, beta=2, rho=3, h=4)
+    hlm.add_layer(alpha=2, beta=1, rho=3, h=4)
     string = hlm.__str__()
-    expected = "Layer #0: alpha=1 beta=2 rho=3 h=4\n"
+    expected = "Layer #0: alpha=2 beta=1 rho=3 h=4\n"
     expected += "Half-space: alpha=1000 beta=500 rho=1300"
     assert string == expected
 
     # with multiple layers, they are listed top to bottom
-    hlm.add_layer(alpha=5, beta=6, rho=7, h=8)
+    hlm.add_layer(alpha=6, beta=5, rho=7, h=8)
     string = hlm.__str__()
-    expected = "Layer #0: alpha=5 beta=6 rho=7 h=8\n"
-    expected += "Layer #1: alpha=1 beta=2 rho=3 h=4\n"
+    expected = "Layer #0: alpha=6 beta=5 rho=7 h=8\n"
+    expected += "Layer #1: alpha=2 beta=1 rho=3 h=4\n"
     expected += "Half-space: alpha=1000 beta=500 rho=1300"
     assert string == expected
 
