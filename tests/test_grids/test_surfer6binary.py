@@ -80,6 +80,35 @@ def test_surfer6binary_properties(grd_file):
 
     grd = Surfer6BinaryGrid(grd_file)
 
-    assert grd.extent == [0, 9, 10, 38]
-    assert grd.format_kwargs.get('extent') == [0, 9, 10, 38]
-    assert grd.format_kwargs.get('aspect') == 'auto'
+    # to help construct the plt.imshow, grid returns it's extent
+    assert grd.extent == [0, 9, 38, 10]
+
+
+def test_surfer6binary_ivert_axis_methods(grd_file):
+    """ Test the .invert_yaxis() and .invert_xaxis() method of the gird. """
+
+    grd = Surfer6BinaryGrid(grd_file)
+
+    dm = np.arange(150).reshape(15, 10)
+
+    assert np.alltrue(grd.DM == dm)
+    assert grd.ylo == 10
+    assert grd.yhi == 38
+    assert grd.xhi == 9
+    assert grd.xlo == 0
+    grd.invert_yaxis()
+    assert np.alltrue(grd.DM == dm[::-1, :])
+    assert grd.ylo == 38
+    assert grd.yhi == 10
+    grd.invert_xaxis()
+    assert np.alltrue(grd.DM == dm[::-1, ::-1])
+    assert grd.xlo == 9
+    assert grd.xhi == 0
+    grd.invert_yaxis()
+    assert np.alltrue(grd.DM == dm[:, ::-1])
+    grd.invert_xaxis()
+    assert np.alltrue(grd.DM == dm)
+    assert grd.ylo == 10
+    assert grd.yhi == 38
+    assert grd.xhi == 9
+    assert grd.xlo == 0

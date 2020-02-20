@@ -62,13 +62,18 @@ class Surfer6BinaryGrid:
                 values = struct.unpack(format_string, bytes_)
                 self.DM[row, :] = values
 
-    @property
-    def extent(self):
-        return [self.xlo, self.xhi, self.ylo, self.yhi]
+    def invert_yaxis(self):
+        """ Inverts the Y axis in the DataMatrix. """
+
+        self.DM = self.DM[::-1, :]
+        self.ylo, self.yhi = self.yhi, self.ylo
+
+    def invert_xaxis(self):
+        """ Inverts the X axis in the DataMatrix. """
+
+        self.DM = self.DM[:, ::-1]
+        self.xlo, self.xhi = self.xhi, self.xlo
 
     @property
-    def format_kwargs(self):
-        return {
-            'aspect': 'auto',
-            'extent': self.extent,
-        }
+    def extent(self):
+        return [self.xlo, self.xhi, self.yhi, self.ylo]
