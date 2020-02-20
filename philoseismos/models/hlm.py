@@ -22,6 +22,9 @@ class HorizontallyLayeredModel:
 
         """
 
+        if alpha and beta >= alpha:
+            raise ValueError('Shear wave velocity definitely should be lower than compressional wave velocity!')
+
         self.alpha = alpha
         self.beta = beta
         self.rho = rho
@@ -69,6 +72,8 @@ class HorizontallyLayeredModel:
 
     def calculate_rayleigh_dispersion_curves(self, n: int):
         """ Calculate n first modal dispersion curves for Rayleigh waves. """
+
+        # TODO: should reset existing curves
 
         if self.omegas is None:
             raise ValueError('First assign the frequency axis!')
@@ -319,7 +324,7 @@ class HorizontallyLayeredModel:
 
         for w, c_prev in zip(self.omegas, self._rayleigh_dispersion_curves[-1]):
 
-            # if c_prev equal to max_beta, go to the next iteration
+            # if c_prev equals max_beta, go to the next iteration
             if c_prev == max_beta:
                 roots.append(max_beta)
                 continue

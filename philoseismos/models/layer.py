@@ -13,6 +13,9 @@ class Layer:
     def __init__(self, alpha, beta, rho, h):
         """ TODO: decribe """
 
+        if alpha and beta >= alpha:
+            raise ValueError('Shear wave velocity definitely should be lower than compressional wave velocity!')
+
         self.alpha = alpha
         self.beta = beta
         self.rho = rho
