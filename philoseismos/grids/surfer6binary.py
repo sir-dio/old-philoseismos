@@ -60,7 +60,7 @@ class Surfer6BinaryGrid:
             for row in range(self.ny):
                 bytes_ = f.read(self.nx * 4)
                 values = struct.unpack(format_string, bytes_)
-                self.DM[self.ny - 1 - row, :] = values
+                self.DM[row, :] = values
 
     @property
     def extent(self):
