@@ -88,19 +88,40 @@ def test_printing_hlm(hlm):
     assert string == expected
 
 
-def test_min_beta(hlm):
-    """ Test that min_beta property returns minimal beta of all layers. """
+def test_hlm_min_max_beta_properties(hlm):
+    """ Test that min_beta and max_beta properties return minimal and maximal beta of all layers. """
 
+    # min and max beta
     assert hlm.min_beta == 500
+    assert hlm.max_beta == 500
 
     hlm.add_layer(alpha=10, beta=5, rho=20, h=3)
     assert hlm.min_beta == 5
+    assert hlm.max_beta == 500
 
-    hlm.add_layer(alpha=10, beta=8, rho=20, h=3)
+    hlm.add_layer(alpha=700, beta=650, rho=20, h=3)
     assert hlm.min_beta == 5
+    assert hlm.max_beta == 650
 
     hlm.add_layer(alpha=10, beta=3, rho=20, h=3)
     assert hlm.min_beta == 3
+    assert hlm.max_beta == 650
+
+
+def test_hlm_cumulative_layer_thickness(hlm):
+    """ Test that cumulative_layer_h property returns cumulative layer thickness. """
+
+    # for no layers
+    assert hlm.cumulative_layer_h == 0
+
+    hlm.add_layer(0, 0, 0, h=5)
+    assert hlm.cumulative_layer_h == 5
+
+    hlm.add_layer(0, 0, 0, h=250)
+    assert hlm.cumulative_layer_h == 255
+
+    hlm.add_layer(0, 0, 0, 0.15)
+    assert hlm.cumulative_layer_h == 255.15
 
 
 def test_frequency_axis_assigning(hlm):
@@ -117,6 +138,34 @@ def test_frequency_axis_assigning(hlm):
     # when its assigned, both fs and omegas are changed
     assert np.alltrue(hlm.fs == fs)
     assert np.alltrue(hlm.omegas == fs * 2 * np.pi)
+
+
+def test_hlm_custom_parameter_curves():
+    """ Test method for creating parameter curves for custom depth curves. """
+
+    # just the half-space
+    hlm = HorizontallyLayeredModel(alpha=100, beta=50, rho=1000)
+    depths, alphas, betas, rhos = hlm.parameter_profiles_for_z(z0=0, z1=10, dz=1)
+
+    # the depth range should be inclusive
+    assert np.alltrue(depths == np.arange(0, 11, 1))
+
+    # shape of the resulting parameter curves is determined by z
+    assert alphas.shape == betas.shape == rhos.shape == (11,)
+
+    # with no layers, all the values correspond to half-space itself
+    assert np.alltrue(alphas == 100)
+    assert np.alltrue(betas == 50)
+    assert np.alltrue(rhos == 1000)
+
+    # add a layer
+    hlm.add_layer(alpha=50, beta=25, rho=500, h=10)
+    depths, alphas, betas, rhos = hlm.parameter_profiles_for_z(z0=0, z1=20, dz=5)
+
+    # now the curves correspond to both the layer and the half-space
+    assert np.alltrue(alphas == np.array([50, 50, 100, 100, 100]))
+    assert np.alltrue(betas == np.array([25, 25, 50, 50, 50]))
+    assert np.alltrue(rhos == np.array([500, 500, 1000, 1000, 1000]))
 
 
 @pytest.mark.skip(reason="WIP")

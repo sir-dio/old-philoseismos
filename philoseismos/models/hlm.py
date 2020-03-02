@@ -133,6 +133,42 @@ class HorizontallyLayeredModel:
 
         return depths, alphas, betas, rhos
 
+    def parameter_profiles_for_z(self, z0, z1, dz):
+        """ Return the parameters of the layers corresponding to a given depth curve.
+
+        Args:
+            z0 : Start of the depth interval.
+            z1 : End of the depth interval (included).
+            dz : Step for the depth interval.
+
+        Returns:
+            depths, alphas, betas, rhos: Lists of parameters.
+
+        """
+
+        depths = np.arange(z0, z1 + dz, dz)
+
+        alphas = np.empty_like(depths)
+        betas = np.empty_like(depths)
+        rhos = np.empty_like(depths)
+
+        index = 0
+
+        for layer in self.layers[::-1]:
+            alpha, beta, rho = layer.parameter_lines(dz=dz)
+
+            alphas[index:index + alpha.size] = alpha
+            betas[index:index + alpha.size] = beta
+            rhos[index:index + alpha.size] = rho
+
+            index += alpha.size
+
+        alphas[index:] = self.alpha
+        betas[index:] = self.beta
+        rhos[index:] = self.rho
+
+        return depths, alphas, betas, rhos
+
     @property
     def layers(self):
         return tuple(self._layers)
@@ -156,6 +192,10 @@ class HorizontallyLayeredModel:
     @property
     def rayleigh_dispersion_curves(self):
         return tuple(self._rayleigh_dispersion_curves)
+
+    @property
+    def cumulative_layer_h(self):
+        return sum([l.h for l in self.layers])
 
     def _matrix_for_stack_of_layers_for_love(self, w, c):
         """ Calculate the matrix for stack of layers for Love waves. """

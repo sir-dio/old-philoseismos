@@ -70,3 +70,15 @@ def test_layer_matrix_for_love_waves(beta, rho, h, w, c):
     assert layer_matrix[0, 1] == a12
     assert layer_matrix[1, 0] == a21
     assert layer_matrix[1, 1] == a22
+
+
+def test_layer_parameter_lines():
+    """ Test the parameter_lines method. """
+
+    l = Layer(100, 50, 1000, h=5)
+    a, b, r = l.parameter_lines(dz=1)
+
+    # returns constant curves, not including the last point
+    assert np.alltrue(a == np.array([100] * 5))
+    assert np.alltrue(b == np.array([50] * 5))
+    assert np.alltrue(r == np.array([1000] * 5))

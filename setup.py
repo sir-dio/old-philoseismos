@@ -23,6 +23,7 @@ REQUIRED = [
     "pandas",
     "h5py",
     "scipy",
+    "tqdm",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

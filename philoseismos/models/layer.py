@@ -136,3 +136,14 @@ class Layer:
         ])
 
         return np.real(A)
+
+    def parameter_lines(self, dz):
+        """ Return the lines with the layer's parameters given the discretization step. """
+
+        zs = np.arange(0, self.h, dz)
+
+        alphas = np.ones_like(zs) * self.alpha
+        betas = np.ones_like(zs) * self.beta
+        rhos = np.ones_like(zs) * self.rho
+
+        return alphas, betas, rhos

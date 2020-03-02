@@ -17,7 +17,7 @@ def bad_grd_file(tmp_path_factory):
     """ A file without the needed ID string at the beginning."""
 
     tempdir = tmp_path_factory.mktemp('tempdir')
-    file = tempdir / 'bad_fiile.grd'
+    file = tempdir / 'bad_file.grd'
 
     with open(file, 'bw') as f:
         bad_data = 'This is a very bad data!'.encode(encoding='cp500')
