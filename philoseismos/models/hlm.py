@@ -9,6 +9,7 @@ import numpy as np
 from scipy import optimize
 
 from philoseismos.models.layer import Layer
+from philoseismos import Segy
 
 
 # TODO: existence of Love waves condition check
@@ -146,6 +147,8 @@ class HorizontallyLayeredModel:
 
         """
 
+        # TODO: support slicing of the model
+
         depths = np.arange(z0, z1 + dz, dz)
 
         alphas = np.empty_like(depths)
@@ -168,6 +171,52 @@ class HorizontallyLayeredModel:
         rhos[index:] = self.rho
 
         return depths, alphas, betas, rhos
+
+    def export_to_sgy_for_tesseral(self, x0, x1, dx, z0, z1, dz, base_filename):
+        """ Export model to SEG-Y format for use in Tesseral.
+
+        Args:
+            x0 : Start of the x axis.
+            x1 : End of the x axis.
+            dx : Step for x axis.
+            z0 : Start of the z axis.
+            z1 : End of the z axis.
+            dz : Step for the z axis.
+            base_filename : Base file name for resulitng SEG-Y files. The parameter name and
+                file extension will be appended automatically.
+
+        Notes:
+            Creates three SEG-Y files: one with values of Vp, one with values of Vs, and one
+            with values of rho.
+
+        """
+
+        x_coord = np.arange(x0, x1 + dx, dx)
+        z_coord, alphas, betas, rhos = self.parameter_profiles_for_z(z0=z0, z1=z1, dz=dz)
+
+        alpha_sgy = Segy.empty(shape=(x_coord.size, z_coord.size), sample_interval=dz * 1000)
+        beta_sgy = Segy.empty(shape=(x_coord.size, z_coord.size), sample_interval=dz * 1000)
+        rho_sgy = Segy.empty(shape=(x_coord.size, z_coord.size), sample_interval=dz * 1000)
+
+        alpha_sgy.G.table.loc[:, 'COORDSC'] = -1000
+        alpha_sgy.G.table.loc[:, 'ELEVSC'] = -1000
+        alpha_sgy.G.table.loc[:, 'REC_X'] = x_coord
+
+        beta_sgy.G.table.loc[:, 'COORDSC'] = -1000
+        beta_sgy.G.table.loc[:, 'ELEVSC'] = -1000
+        beta_sgy.G.table.loc[:, 'REC_X'] = x_coord
+
+        rho_sgy.G.table.loc[:, 'COORDSC'] = -1000
+        rho_sgy.G.table.loc[:, 'ELEVSC'] = -1000
+        rho_sgy.G.table.loc[:, 'REC_X'] = x_coord
+
+        alpha_sgy.DM.matrix[:] = alphas
+        beta_sgy.DM.matrix[:] = betas
+        rho_sgy.DM.matrix[:] = rhos
+
+        alpha_sgy.save_file(base_filename + '_Vp.sgy')
+        beta_sgy.save_file(base_filename + '_Vs.sgy')
+        rho_sgy.save_file(base_filename + '_Rho.sgy')
 
     @property
     def layers(self):
