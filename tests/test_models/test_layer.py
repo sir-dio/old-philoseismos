@@ -76,9 +76,10 @@ def test_layer_parameter_lines():
     """ Test the parameter_lines method. """
 
     l = Layer(100, 50, 1000, h=5)
-    a, b, r = l.parameter_lines(dz=1)
+    a, b, r, q = l.parameter_lines(dz=1)
 
     # returns constant curves, not including the last point
     assert np.alltrue(a == np.array([100] * 5))
     assert np.alltrue(b == np.array([50] * 5))
     assert np.alltrue(r == np.array([1000] * 5))
+    assert np.alltrue(q == 0)

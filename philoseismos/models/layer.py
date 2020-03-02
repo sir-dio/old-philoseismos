@@ -10,7 +10,7 @@ import numpy as np
 
 class Layer:
 
-    def __init__(self, alpha, beta, rho, h):
+    def __init__(self, alpha, beta, rho, h, Q=0):
         """ Create a new Layer object.
 
          This object is not intended to be used directly (at least for now), however such possibility exists.
@@ -31,6 +31,7 @@ class Layer:
         self.beta = beta
         self.rho = rho
         self.h = h
+        self.Q = Q
 
     def layer_matrix_love(self, omega, c):
         """ Return a layer matrix for Love waves for a given phase velocity and frequency.
@@ -145,5 +146,6 @@ class Layer:
         alphas = np.ones_like(zs) * self.alpha
         betas = np.ones_like(zs) * self.beta
         rhos = np.ones_like(zs) * self.rho
+        qs = np.ones_like(zs) * self.Q
 
-        return alphas, betas, rhos
+        return alphas, betas, rhos, qs

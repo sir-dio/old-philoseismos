@@ -16,7 +16,7 @@ from philoseismos import Segy
 
 class HorizontallyLayeredModel:
 
-    def __init__(self, alpha, beta, rho):
+    def __init__(self, alpha, beta, rho, Q=0):
         """ Create a new HLM: represented by the half-space.
 
         To add layers on top of the half-space, use add_layer() method.
@@ -34,6 +34,7 @@ class HorizontallyLayeredModel:
         self.alpha = alpha
         self.beta = beta
         self.rho = rho
+        self.Q = Q
 
         self.fs = None
         self.omegas = None
@@ -45,7 +46,7 @@ class HorizontallyLayeredModel:
         self._love_dispersion_curves = []
         self._rayleigh_dispersion_curves = []
 
-    def add_layer(self, alpha, beta, rho, h):
+    def add_layer(self, alpha, beta, rho, h, Q=0):
         """ Add a layer on top of the HLM.
 
         The layers are added on top! So the model is always created from bottom to top:
@@ -60,7 +61,7 @@ class HorizontallyLayeredModel:
 
         """
 
-        layer = Layer(alpha=alpha, beta=beta, rho=rho, h=h)
+        layer = Layer(alpha=alpha, beta=beta, rho=rho, h=h, Q=Q)
         self._layers.append(layer)
 
     def set_frequency_axis(self, fs):
@@ -115,7 +116,7 @@ class HorizontallyLayeredModel:
         """
 
         current_depth = 0
-        depths, alphas, betas, rhos = [], [], [], []
+        depths, alphas, betas, rhos, qs = [], [], [], []
 
         # for all the layers top to bottom
         for layer in reversed(self._layers):
@@ -123,6 +124,7 @@ class HorizontallyLayeredModel:
             alphas += [layer.alpha] * 2
             betas += [layer.beta] * 2
             rhos += [layer.rho] * 2
+            qs += [layer.Q] * 2
 
             current_depth += layer.h
 
@@ -131,8 +133,9 @@ class HorizontallyLayeredModel:
         alphas += [self.alpha] * 2
         betas += [self.beta] * 2
         rhos += [self.rho] * 2
+        qs += [self.Q] * 2
 
-        return depths, alphas, betas, rhos
+        return depths, alphas, betas, rhos, qs
 
     def parameter_profiles_for_z(self, z0, z1, dz):
         """ Return the parameters of the layers corresponding to a given depth curve.
@@ -154,23 +157,26 @@ class HorizontallyLayeredModel:
         alphas = np.empty_like(depths)
         betas = np.empty_like(depths)
         rhos = np.empty_like(depths)
+        qs = np.empty_like(depths)
 
         index = 0
 
         for layer in self.layers[::-1]:
-            alpha, beta, rho = layer.parameter_lines(dz=dz)
+            alpha, beta, rho, q = layer.parameter_lines(dz=dz)
 
             alphas[index:index + alpha.size] = alpha
             betas[index:index + alpha.size] = beta
             rhos[index:index + alpha.size] = rho
+            qs[index:index + alpha.size] = q
 
             index += alpha.size
 
         alphas[index:] = self.alpha
         betas[index:] = self.beta
         rhos[index:] = self.rho
+        qs[index:] = self.Q
 
-        return depths, alphas, betas, rhos
+        return depths, alphas, betas, rhos, qs
 
     def export_to_sgy_for_tesseral(self, x0, x1, dx, z0, z1, dz, base_filename):
         """ Export model to SEG-Y format for use in Tesseral.
@@ -192,11 +198,12 @@ class HorizontallyLayeredModel:
         """
 
         x_coord = np.arange(x0, x1 + dx, dx)
-        z_coord, alphas, betas, rhos = self.parameter_profiles_for_z(z0=z0, z1=z1, dz=dz)
+        z_coord, alphas, betas, rhos, qs = self.parameter_profiles_for_z(z0=z0, z1=z1, dz=dz)
 
         alpha_sgy = Segy.empty(shape=(x_coord.size, z_coord.size), sample_interval=dz * 1000)
         beta_sgy = Segy.empty(shape=(x_coord.size, z_coord.size), sample_interval=dz * 1000)
         rho_sgy = Segy.empty(shape=(x_coord.size, z_coord.size), sample_interval=dz * 1000)
+        q_sgy = Segy.empty(shape=(x_coord.size, z_coord.size), sample_interval=dz * 1000)
 
         alpha_sgy.G.table.loc[:, 'COORDSC'] = -1000
         alpha_sgy.G.table.loc[:, 'ELEVSC'] = -1000
@@ -210,13 +217,19 @@ class HorizontallyLayeredModel:
         rho_sgy.G.table.loc[:, 'ELEVSC'] = -1000
         rho_sgy.G.table.loc[:, 'REC_X'] = x_coord
 
+        q_sgy.G.table.loc[:, 'COORDSC'] = -1000
+        q_sgy.G.table.loc[:, 'ELEVSC'] = -1000
+        q_sgy.G.table.loc[:, 'REC_X'] = x_coord
+
         alpha_sgy.DM.matrix[:] = alphas
         beta_sgy.DM.matrix[:] = betas
         rho_sgy.DM.matrix[:] = rhos
+        q_sgy.DM.matrix[:] = qs
 
         alpha_sgy.save_file(base_filename + '_Vp.sgy')
         beta_sgy.save_file(base_filename + '_Vs.sgy')
         rho_sgy.save_file(base_filename + '_Rho.sgy')
+        q_sgy.save_file(base_filename + '_Q.sgy')
 
     @property
     def layers(self):

@@ -145,7 +145,7 @@ def test_hlm_custom_parameter_curves():
 
     # just the half-space
     hlm = HorizontallyLayeredModel(alpha=100, beta=50, rho=1000)
-    depths, alphas, betas, rhos = hlm.parameter_profiles_for_z(z0=0, z1=10, dz=1)
+    depths, alphas, betas, rhos, qs = hlm.parameter_profiles_for_z(z0=0, z1=10, dz=1)
 
     # the depth range should be inclusive
     assert np.alltrue(depths == np.arange(0, 11, 1))
@@ -160,12 +160,13 @@ def test_hlm_custom_parameter_curves():
 
     # add a layer
     hlm.add_layer(alpha=50, beta=25, rho=500, h=10)
-    depths, alphas, betas, rhos = hlm.parameter_profiles_for_z(z0=0, z1=20, dz=5)
+    depths, alphas, betas, rhos, qs = hlm.parameter_profiles_for_z(z0=0, z1=20, dz=5)
 
     # now the curves correspond to both the layer and the half-space
     assert np.alltrue(alphas == np.array([50, 50, 100, 100, 100]))
     assert np.alltrue(betas == np.array([25, 25, 50, 50, 50]))
     assert np.alltrue(rhos == np.array([500, 500, 1000, 1000, 1000]))
+    assert np.alltrue(qs == 0)
 
 
 @pytest.mark.skip(reason="WIP")
