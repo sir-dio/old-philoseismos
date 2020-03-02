@@ -169,7 +169,7 @@ class Segy:
             out.G.table = pd.DataFrame(index=range(nt), columns=TH_columns)
             out.G.table.loc[:, 'FFID'] = 1
             out.G.table.loc[:, 'CHAN'] = range(1, nt + 1)
-            out.G.table.loc[:, 'DT'] = si
+            out.G.table.loc[:, 'DT'] = int(si)
             out.G.table.loc[:, 'NUMSMP'] = ns
             out.G.table.fillna(0, inplace=True)
         elif isinstance(segy, Segy):
@@ -184,7 +184,7 @@ class Segy:
             out.G.table = pd.DataFrame(index=range(shape[0]), columns=TH_columns)
             out.G.table.loc[:, 'FFID'] = 1
             out.G.table.loc[:, 'CHAN'] = range(1, shape[0] + 1)
-            out.G.table.loc[:, 'DT'] = segy.BFH['Sample Interval']
+            out.G.table.loc[:, 'DT'] = int(segy.BFH['Sample Interval'])
             out.G.table.loc[:, 'NUMSMP'] = segy.BFH['Samples / Trace']
             out.G.table.fillna(0, inplace=True)
         else:
@@ -203,7 +203,7 @@ class Segy:
         out.TFH.set_content('Created in philoseismos! With love to programming and seismology.')
 
         out.BFH.table['Traces / Ensemble'] = shape[0]
-        out.BFH.table['Sample Interval'] = sample_interval
+        out.BFH.table['Sample Interval'] = int(sample_interval)
         out.BFH.table['Samples / Trace'] = shape[1]
         out.BFH.table['Sample Format'] = 5
 
@@ -212,7 +212,7 @@ class Segy:
         out.G.table = pd.DataFrame(index=range(shape[0]), columns=TH_columns)
         out.G.table.loc[:, 'FFID'] = 1
         out.G.table.loc[:, 'CHAN'] = range(1, shape[0] + 1)
-        out.G.table.loc[:, 'DT'] = sample_interval
+        out.G.table.loc[:, 'DT'] = int(sample_interval)
         out.G.table.loc[:, 'NUMSMP'] = shape[1]
         out.G.table.fillna(0, inplace=True)
 
