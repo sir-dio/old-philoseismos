@@ -12,6 +12,7 @@ from philoseismos.segy.tools import ibm
 from philoseismos.segy.tools.constants import data_type_map1, unpack_pbar_params
 
 import numpy as np
+import scipy.fftpack as fft
 import struct
 import os.path
 
@@ -47,6 +48,25 @@ class DataMatrix:
 
         self.matrix = self.matrix[:, self.t < end_time]
         self.t = self.t[self.t < end_time]
+
+    def average_spectrum(self):
+        """ Compute the average amplitude spectrum of the traces.
+
+        Returns:
+            freq : The frequency axis.
+            amps : The average amplitude spectrum.
+
+        """
+
+        spectrum = np.abs(fft.fft(self.matrix))
+        avg_spectrum = np.average(spectrum, axis=0)
+        freq = fft.fftfreq(avg_spectrum.size, d=self.dt / 1e3)
+
+        # only return a half of the spectrum (0 Hz to Nyquist frequency)
+        avg_spectrum = avg_spectrum[freq > 0]
+        freq = freq[freq > 0]
+
+        return freq, avg_spectrum
 
     # ----- Properties ----- #
 
@@ -122,7 +142,7 @@ class DataMatrix:
 
         # generate time axis
         self.dt = si / 1e3  # convert to ms
-        self.t = np.arange(0, tl * si, si)
+        self.t = np.arange(0, tl * self.dt, self.dt)
 
     def replace_in_file(self, file):
         """ Replaces the traces in the file with self.
