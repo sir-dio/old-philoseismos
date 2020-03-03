@@ -32,14 +32,21 @@ class DataMatrix:
         self.matrix = None
 
         self.t = None
+        self.dt = None
 
         if file:
             self.load_from_file(file, progress=progress)
 
     def crop_traces(self, end_time):
-        """ Set new length for traces. """
+        """ Set new length for traces.
 
-        pass
+        Args:
+            end_time : End time in ms.
+
+        """
+
+        self.matrix = self.matrix[:, self.t < end_time]
+        self.t = self.t[self.t < end_time]
 
     # ----- Properties ----- #
 
@@ -114,7 +121,7 @@ class DataMatrix:
                         self.matrix[i] = values
 
         # generate time axis
-        si = si / 1e3  # convert to ms
+        self.dt = si / 1e3  # convert to ms
         self.t = np.arange(0, tl * si, si)
 
     def replace_in_file(self, file):
