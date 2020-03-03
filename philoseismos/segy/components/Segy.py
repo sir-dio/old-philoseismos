@@ -165,6 +165,7 @@ class Segy:
             out.BFH['Sample Format'] = 5
 
             out.DM.matrix = np.zeros((nt, ns), dtype=np.float32)
+            out.DM.t = np.arange(0, ns * si / 1e3, si / 1e3)
 
             out.G.table = pd.DataFrame(index=range(nt), columns=TH_columns)
             out.G.table.loc[:, 'FFID'] = 1
@@ -180,6 +181,8 @@ class Segy:
             out.BFH['Sample Interval'] = segy.BFH['Sample Interval']
             out.BFH['Samples / Trace'] = segy.BFH['Samples / Trace']
             out.BFH['Sample Format'] = 5
+
+            out.DM.t = np.arang(0, shape[0] * out.BFH['Sample Interval'] / 1e3, out.BFH['Sample Interval'])
 
             out.G.table = pd.DataFrame(index=range(shape[0]), columns=TH_columns)
             out.G.table.loc[:, 'FFID'] = 1
@@ -208,6 +211,7 @@ class Segy:
         out.BFH.table['Sample Format'] = 5
 
         out.DM.matrix = np.zeros(shape, dtype=np.float32)
+        out.DM.t = np.arange(0, shape[1] * sample_interval / 1e3, sample_interval / 1e3)
 
         out.G.table = pd.DataFrame(index=range(shape[0]), columns=TH_columns)
         out.G.table.loc[:, 'FFID'] = 1

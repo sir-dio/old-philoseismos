@@ -30,12 +30,19 @@ class DataMatrix:
         """ """
 
         self.matrix = None
-        self.normalization_mode = 'individual'  # can also be "whole"
+
+        self.t = None
 
         if file:
             self.load_from_file(file, progress=progress)
 
-    # ----- Normalized ----- #
+    def crop_traces(self, end_time):
+        """ Set new length for traces. """
+
+        pass
+
+    # ----- Properties ----- #
+
     @property
     def normalized(self):
         """ Returns a normalized version of self.matrix.
@@ -61,7 +68,7 @@ class DataMatrix:
         """
 
         # endian, format letter, trace length, sample size, number of traces, numpy data type
-        endian, fl, tl, ss, nt, dtype = self._get_parameters_from_file(file)
+        endian, fl, tl, ss, nt, dtype, si = self._get_parameters_from_file(file)
 
         self.matrix = np.empty(shape=(nt, tl), dtype=dtype)
 
@@ -106,6 +113,10 @@ class DataMatrix:
                         values = struct.unpack(format_string, raw_trace)
                         self.matrix[i] = values
 
+        # generate time axis
+        si = si / 1e3  # convert to ms
+        self.t = np.arange(0, tl * si, si)
+
     def replace_in_file(self, file):
         """ Replaces the traces in the file with self.
 
@@ -115,7 +126,7 @@ class DataMatrix:
             Path to the SEG-Y file to replace Data Matrix in.
         """
 
-        endian, fl, tl, ss, nt, dtype = self._get_parameters_from_file(file)
+        endian, fl, tl, ss, nt, dtype, si = self._get_parameters_from_file(file)
 
         if self.matrix.shape != (nt, tl):
             raise ValueError('Matrix shape does not fit the file!')
@@ -176,6 +187,8 @@ class DataMatrix:
         """
 
         with open(file, 'br') as f:
+            f.seek(3216)
+            si_bytes = f.read(2)
             f.seek(3220)
             tl_bytes = f.read(2)
             f.seek(3224)
@@ -185,6 +198,7 @@ class DataMatrix:
 
         endian = gfunc._detect_endianness_from_sample_format_bytes(sf_bytes)
 
+        si = struct.unpack(endian + 'h', si_bytes)[0]
         tl = struct.unpack(endian + 'h', tl_bytes)[0]
         sf = struct.unpack(endian + 'h', sf_bytes)[0]
         nt = struct.unpack(endian + 'Q', nt_bytes)[0]
@@ -196,4 +210,4 @@ class DataMatrix:
             data_size = os.path.getsize(file) - 3600
             nt = int(data_size / (sample_size * tl + 240))
 
-        return endian, format_letter, tl, sample_size, nt, dtype
+        return endian, format_letter, tl, sample_size, nt, dtype, si
