@@ -1,15 +1,16 @@
-.. philoseismos documentation master file, created by
-   sphinx-quickstart on Wed Mar  4 15:16:28 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+philoseismos: documentation
+===========================
 
-Welcome to philoseismos's documentation!
-========================================
+:code:`philoseismos` is a toolbox library for near-surface seismologists.
+I have been building it to help myself with work and research.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
+    :caption: Contents:
 
+    segy
+    models
+    api
 
 
 Indices and tables
