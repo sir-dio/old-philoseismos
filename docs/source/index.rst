@@ -1,24 +1,20 @@
-philoseismos: Documentation
+.. philoseismos documentation master file, created by
+   sphinx-quickstart on Wed Mar  4 15:16:28 2020.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to philoseismos's documentation!
 ========================================
 
-.. module:: philoseismos
-
-*philoseismos* is meant to be a toolbox for engineering seismologists.
-This is sort of my passion project, driven by lots of annoying little
-inefficiencies in the software I have to use working with near-surface
-seismic surveys. The urge to find better tools aligns nicely with my love of
-programming, and *philoseismos* is the the offspring of these two forces.
-
 .. toctree::
-    :maxdepth: 1
-    :caption: Contents
+   :maxdepth: 2
+   :caption: Contents:
 
-    segy/segy
-    coordinates/coordinates
 
-.. code-block:: python
-    :linenos:
 
-    from philoseismos import Segy
-    t = Segy('pr01_p001.sgy')
+Indices and tables
+==================
 
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
