@@ -15,7 +15,7 @@ class TextualFileHeader:
 
      """
 
-    def __init__(self):
+    def __init__(self, file=None):
         """ Create an empty Textual File Header object. """
 
         # standard encoding specified in SEG-Y file format description
@@ -25,6 +25,9 @@ class TextualFileHeader:
         self.lines = [self.text[i * 80: (i + 1) * 80] for i in range(40)]
 
         self._bytes = None
+
+        if file:
+            self.load_from_file(file)
 
     # ----- Loading, decoding, writing ----- #
 
