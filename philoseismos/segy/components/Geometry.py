@@ -89,6 +89,10 @@ class Geometry:
         """ Returns only filled columns of the Geometry spreadsheet. """
         return self.table.loc[:, (self.table != 0).any()]
 
+    @property
+    def OFFSET(self):
+        return self.table.loc[:, 'OFFSET']
+
     # ----- Dunder methods ----- #
 
     def __repr__(self):

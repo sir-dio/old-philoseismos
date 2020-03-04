@@ -40,6 +40,9 @@ class Segy:
         self.DM = DataMatrix()
         self.G = Geometry()
 
+        # store reference to self in the components
+        self.DM._parent = self
+
         if file:
             self.load_file(file, progress=progress)
 
