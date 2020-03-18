@@ -85,6 +85,8 @@ class HorizontallyLayeredModel:
         if n <= 0:
             return
 
+        self._love_dispersion_curves = []
+
         self._calculate_love_fundamental_mode()
         for i in range(n - 1):
             self._calculate_love_next_higher_mode()
@@ -92,13 +94,13 @@ class HorizontallyLayeredModel:
     def calculate_rayleigh_dispersion_curves(self, n: int):
         """ Calculate n first modal dispersion curves for Rayleigh waves. """
 
-        # TODO: should reset existing curves
-
         if self.omegas is None:
             raise ValueError('First assign the frequency axis!')
 
         if n <= 0:
             return
+
+        self._rayleigh_dispersion_curves = []
 
         self._calculate_rayleigh_fundamental_mode()
         for i in range(n - 1):

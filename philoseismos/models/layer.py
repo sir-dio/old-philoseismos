@@ -17,10 +17,11 @@ class Layer:
          Layers are managed by a Horizontally Layered Model objects.
 
         Args:
-            alpha (float): P-wave velocity in m/s.
+            alpha (float or None): P-wave velocity in m/s. For Love waves can be set to None.
             beta (float): S-wave velocity in m/s.
             rho (float): Density in kg / m^3.
             h (float): Layer thickness in m.
+            Q (float): Quality factor. Used for plotting and exporting models.
 
          """
 
@@ -93,41 +94,27 @@ class Layer:
 
         a11 = a44 = gamma * np.cos(P) - delta * np.cos(Q)
 
-        if r == 0:
+        if c == self.alpha:
             a12 = a34 = gamma * s * np.sin(Q)
-        else:
-            a12 = a34 = delta / r * np.sin(P) + gamma * s * np.sin(Q)
-
-        a13 = a24 = -(np.cos(P) - np.cos(Q)) / self.rho
-
-        if r == 0:
             a14 = s * np.sin(Q) / self.rho
-        else:
-            a14 = (np.sin(P) / r + s * np.sin(Q)) / self.rho
-
-        if s == 0:
-            a21 = a43 = gamma * r * np.sin(P)
-        else:
-            a21 = a43 = gamma * r * np.sin(P) + delta / s * np.sin(Q)
-
-        a22 = a33 = -delta * np.cos(P) + gamma * np.cos(Q)
-
-        if s == 0:
-            a23 = -r * np.sin(P) / self.rho
-        else:
-            a23 = -(r * np.sin(P) + np.sin(Q) / s) / self.rho
-
-        a31 = a42 = self.rho * gamma * delta * (np.cos(P) - np.cos(Q))
-
-        if r == 0:
             a32 = self.rho * gamma ** 2 * s * np.sin(Q)
         else:
+            a12 = a34 = delta / r * np.sin(P) + gamma * s * np.sin(Q)
+            a14 = (np.sin(P) / r + s * np.sin(Q)) / self.rho
             a32 = self.rho * (delta ** 2 / r * np.sin(P) + gamma ** 2 * s * np.sin(Q))
 
-        if s == 0:
+        if c == self.beta:
+            a21 = a43 = gamma * r * np.sin(P)
+            a23 = -r * np.sin(P) / self.rho
             a41 = -self.rho * gamma ** 2 * r * np.sin(P)
         else:
+            a21 = a43 = gamma * r * np.sin(P) + delta / s * np.sin(Q)
+            a23 = -(r * np.sin(P) + np.sin(Q) / s) / self.rho
             a41 = -self.rho * (gamma ** 2 * r * np.sin(P) + delta ** 2 / s * np.sin(Q))
+
+        a13 = a24 = -(np.cos(P) - np.cos(Q)) / self.rho
+        a22 = a33 = -delta * np.cos(P) + gamma * np.cos(Q)
+        a31 = a42 = self.rho * gamma * delta * (np.cos(P) - np.cos(Q))
 
         A = np.array([
             [a11, a12, a13, a14],
