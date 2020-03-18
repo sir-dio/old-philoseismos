@@ -116,7 +116,7 @@ class HorizontallyLayeredModel:
         """
 
         current_depth = 0
-        depths, alphas, betas, rhos, qs = [], [], [], []
+        depths, alphas, betas, rhos, qs = [], [], [], [], []
 
         # for all the layers top to bottom
         for layer in reversed(self._layers):

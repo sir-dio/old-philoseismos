@@ -15,7 +15,7 @@ URL = 'https://github.com/sir-dio/philoseismos'
 EMAIL = 'dubrovin.io@icloud.com'
 AUTHOR = 'Ivan Dubrovin'
 REQUIRES_PYTHON = '>=3.5.0'
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
