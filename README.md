@@ -19,19 +19,8 @@
 
 *philoseismos* is a toolbox library for a near-surface seismologists.
 
-## Working with .sgy files
-One of the most important parts of the philoseismos library is a `segy` package
-that defines a `Segy`. It separates SEG-Y files into their
-main components: Textual file header, Binary file header, Data matrix (contains the traces in
-`numpy` matrix form) and Geometry (contains the trace headers in `pandas` `DataFrame` form).
-
-Loading a Segy file is as simple as it gets:
-```python
-from philoseismos import Segy
-
-a = Segy('PR0001_P0001_R0001.sgy')
-```
-
-## Working with .wpt files
-The philoseismos.coordinates package defines another useful class: `WayPoints`,
-that represents a .wpt file used in OziExplorer.
+## Features
+* Working with SEG-Y files, wpt files, Surfer Grid files
+* Dispersion image calculation from seismograms (phase-shift method)
+* Complimentary functionality for gprMax
+* Dispersion curve calculation for Rayleigh and Love waves for horizontally layered media
