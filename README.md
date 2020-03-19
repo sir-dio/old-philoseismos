@@ -22,5 +22,5 @@
 ## Features
 * Working with SEG-Y files, wpt files, Surfer Grid files
 * Dispersion image calculation from seismograms (phase-shift method)
-* Complimentary functionality for gprMax
+* Complimentary functionality for gprMax (i.e. exporting B-scans to SEG-Y format)
 * Dispersion curve calculation for Rayleigh and Love waves for horizontally layered media
