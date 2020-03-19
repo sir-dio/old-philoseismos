@@ -17,13 +17,13 @@
     Seismic Data Analysis </font>
 </p>
 
-*philoseismos is a toolbox library for a near-surface seismologists.*
+*philoseismos* is a toolbox library for a near-surface seismologists.
 
 ## Working with .sgy files
-One of the most important parts of the philoseismos library is a segy package
-that defines a `Segy` class representing a .sgy file. It separates the files into its
+One of the most important parts of the philoseismos library is a `segy` package
+that defines a `Segy`. It separates SEG-Y files into their
 main components: Textual file header, Binary file header, Data matrix (contains the traces in
-numpy matrix form) and Geometry (contains the trace headers in pandas DataFrame form).
+`numpy` matrix form) and Geometry (contains the trace headers in `pandas` `DataFrame` form).
 
 Loading a Segy file is as simple as it gets:
 ```python
