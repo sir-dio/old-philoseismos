@@ -458,11 +458,16 @@ class HorizontallyLayeredModel:
 
             # get the sign of the dispersion equation
             sign = np.sign(dispersion_function(guess))
+            print(sign)
 
             while guess < max_beta:
                 if np.sign(dispersion_function(guess)) != sign:
-                    root = optimize.bisect(dispersion_function, guess - 1, guess)
-                    roots.append(root)
+                    try:
+                        root = optimize.bisect(dispersion_function, guess - 1, guess)
+                        roots.append(root)
+                    # TODO: this hack feel cheaty af.
+                    except ValueError:
+                        roots.append(max_beta)
                     break
                 else:
                     guess += 1
